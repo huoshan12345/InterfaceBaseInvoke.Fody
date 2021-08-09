@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceBaseInvoke", "InterfaceBaseInvoke\InterfaceBaseInvoke.csproj", "{15054D3D-0FA0-4400-83B1-608B864FF767}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CD658072-42FB-4B0B-BED8-E88B07878E3F} = {CD658072-42FB-4B0B-BED8-E88B07878E3F}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceBaseInvoke.Fody", "InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj", "{CD658072-42FB-4B0B-BED8-E88B07878E3F}"
 EndProject

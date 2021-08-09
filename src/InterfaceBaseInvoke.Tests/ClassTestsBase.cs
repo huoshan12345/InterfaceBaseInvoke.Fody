@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Fody;
+using InterfaceBaseInvoke.Fody;
+using InterfaceBaseInvoke.Tests.AssemblyToProcess;
+
+namespace InterfaceBaseInvoke.Tests
+{
+    public abstract class ClassTestsBase
+    {
+        protected static readonly Assembly VerifiableAssembly = typeof(InvokeInClassTestCases).Assembly;
+        protected const string UnverifiableAssembly = "InterfaceBaseInvoke.Tests.UnverifiableAssemblyToProcess";
+        protected const string InvalidAssembly = "InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess";
+
+        protected static readonly TestResult TestResult;
+        protected abstract string ClassName { get; }
+
+        static ClassTestsBase()
+        {
+            var weavingTask = new ModuleWeaver();
+            TestResult = weavingTask.ExecuteTestRun(VerifiableAssembly.Location);
+        }
+
+        protected T GetInstance<T>()
+        {
+            return (T)TestResult.GetInstance(ClassName);
+        }
+    }
+}
