@@ -3,10 +3,7 @@
 [![Build](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/workflows/Build/badge.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/actions?query=workflow%3ABuild)
 [![NuGet package](https://img.shields.io/nuget/v/InterfaceBaseInvoke.Fody.svg?logo=NuGet)](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody)
 [![GitHub release](https://img.shields.io/github/release/huoshan12345/InterfaceBaseInvoke.Fody.svg?logo=GitHub)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/releases)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/master/LICENSE)
-
-![Icon](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/raw/master/icon.png)
-
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/master/LICENSE)  
 The feature `interface default method base invocation` has not been implemented yet.  
 The status for it can be seen in https://github.com/dotnet/csharplang/issues/2337  
 This is an add-in for [Fody](https://github.com/Fody/Fody) which contains a workaround for it.
