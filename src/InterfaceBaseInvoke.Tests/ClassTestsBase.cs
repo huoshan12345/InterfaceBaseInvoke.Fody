@@ -22,12 +22,12 @@ namespace InterfaceBaseInvoke.Tests
         static ClassTestsBase()
         {
             var weavingTask = new ModuleWeaver();
-            TestResult = weavingTask.ExecuteTestRun(VerifiableAssembly.Location);
+            TestResult = weavingTask.ExecuteTestRun(VerifiableAssembly.Location, false);
         }
 
-        protected T GetInstance<T>()
+        protected dynamic GetInstance()
         {
-            return (T)TestResult.GetInstance(ClassName);
+            return TestResult.GetInstance(ClassName);
         }
     }
 }
