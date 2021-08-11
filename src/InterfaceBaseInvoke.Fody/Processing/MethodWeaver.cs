@@ -7,16 +7,19 @@ using InterfaceBaseInvoke.Fody.Support;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using Mono.Collections.Generic;
 
 namespace InterfaceBaseInvoke.Fody.Processing
 {
     internal class MethodWeaver
     {
-        private const string TargetMethodName = "InterfaceBaseInvoke.ObjectExtension.Base";
+        private const string TargetMethodDeclaringTypeName = "InterfaceBaseInvoke.ObjectExtension";
+        private const string TargetMethodName = "Base";
 
         private readonly ModuleDefinition _module;
         private readonly MethodDefinition _method;
         private readonly MethodWeaverLogger _log;
+        private Collection<Instruction> Instructions => _method.Body.Instructions;
 
         public MethodWeaver(ModuleDefinition module, MethodDefinition method, ILogger log)
         {
@@ -87,46 +90,44 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         private void ProcessImpl()
         {
-            var instruction = _method.Body.Instructions.FirstOrDefault();
-
-            while (instruction != null)
+            for (var i = 0; i < Instructions.Count; i++)
             {
-                var nextInstruction = instruction.Next;
+                var instruction = Instructions[i];
 
-                if (instruction.OpCode == OpCodes.Call && instruction.Operand is MethodReference)
+                if (instruction.OpCode != OpCodes.Call
+                    || instruction.Operand is not GenericInstanceMethod method)
+                    continue;
+
+                if (method.DeclaringType.FullName != TargetMethodDeclaringTypeName
+                    || method.Name != TargetMethodName)
+                    continue;
+
+                try
                 {
-                    try
-                    {
-                        ProcessMethodCallFirstPass(instruction, ref nextInstruction);
-                    }
-                    catch (InstructionWeavingException)
-                    {
-                        throw;
-                    }
-                    catch (WeavingException ex)
-                    {
-                        throw new InstructionWeavingException(instruction, _log.QualifyMessage(ex.Message, instruction));
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new InstructionWeavingException(instruction, $"Unexpected error occured while processing method {_method.FullName} at instruction {instruction}: {ex}");
-                    }
+                    Instructions[i] = GetNewInstruction(instruction);
                 }
-
-                instruction = nextInstruction;
+                catch (InstructionWeavingException)
+                {
+                    throw;
+                }
+                catch (WeavingException ex)
+                {
+                    throw new InstructionWeavingException(instruction, _log.QualifyMessage(ex.Message, instruction));
+                }
+                catch (Exception ex)
+                {
+                    throw new InstructionWeavingException(instruction, $"Unexpected error occured while processing method {_method.FullName} at instruction {instruction}: {ex}");
+                }
             }
         }
 
-        private void ProcessMethodCallFirstPass(Instruction instruction, ref Instruction? nextInstruction)
+        private Instruction GetNewInstruction(Instruction instruction)
         {
-            // First pass: Process helper methods. Only removes existing instructions.
+            _log.Debug($"Processing: {instruction}");
 
-            var calledMethod = (MethodReference)instruction.Operand;
-
-            if (calledMethod.FullName != TargetMethodName)
-                return;
-
-
+            var method = (GenericInstanceMethod)instruction.Operand;
+            var interfaceType = method.GenericArguments.First();
+            return instruction;
         }
     }
 }
