@@ -9,7 +9,13 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 
         private class C0 : I0
         {
-            public int Compute(int number) => this.Base<I0, int>(nameof(I0.Compute), number);
+            public int Compute(int number)
+            {
+                var obj = this.Base<I0>();
+                var a = obj.Compute(number + 1);
+                var b = obj.Compute(number + 1);
+                return a + b;
+            }
         }
 
         public int Call()

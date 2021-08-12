@@ -90,9 +90,10 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         private void ProcessImpl()
         {
-            for (var i = 0; i < Instructions.Count; i++)
+            var instruction = Instructions.FirstOrDefault();
+            for (; instruction != null; instruction = instruction.Next)
             {
-                var instruction = Instructions[i];
+                var nextInstruction = instruction.Next;
 
                 if (instruction.OpCode != OpCodes.Call
                     || instruction.Operand is not GenericInstanceMethod method)
@@ -104,7 +105,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
                 try
                 {
-                    Instructions[i] = GetNewInstruction(instruction);
+                    ProcessMethodCall(instruction, ref nextInstruction);
                 }
                 catch (InstructionWeavingException)
                 {
@@ -121,13 +122,14 @@ namespace InterfaceBaseInvoke.Fody.Processing
             }
         }
 
-        private Instruction GetNewInstruction(Instruction instruction)
+        private void ProcessMethodCall(Instruction instruction, ref Instruction? nextInstruction)
         {
             _log.Debug($"Processing: {instruction}");
 
             var method = (GenericInstanceMethod)instruction.Operand;
             var interfaceType = method.GenericArguments.First();
-            return instruction;
+
+
         }
     }
 }

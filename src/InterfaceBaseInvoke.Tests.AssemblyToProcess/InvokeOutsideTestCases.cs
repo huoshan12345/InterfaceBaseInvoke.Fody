@@ -23,7 +23,7 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
         public int Call()
         {
             var c = new C0();
-            return c.Base<I0, int>(nameof(I0.Compute), 2 + (int)Math.Pow(1, 1));
+            return c.Base<I0>().Compute(2 + (int)Math.Pow(1, 1));
         }
     }
 }
