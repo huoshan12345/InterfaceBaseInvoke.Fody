@@ -13,7 +13,21 @@ namespace InterfaceBaseInvoke.Tests
         public void Invoke_InPlace_Test()
         {
             var obj = GetInstance();
-            Assert.Equal(4, obj.InPlace());
+            Assert.Equal(3, obj.InPlace());
+        }
+
+        [Fact]
+        public void AfterAssignment()
+        {
+            var obj = GetInstance();
+            Assert.Equal(3, obj.AfterAssignment());
+        }
+
+        [Fact]
+        public void Multiple()
+        {
+            var obj = GetInstance();
+            Assert.Equal((1, 1, 1, 1), obj.Multiple());
         }
     }
 }

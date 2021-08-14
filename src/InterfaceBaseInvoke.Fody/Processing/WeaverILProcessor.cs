@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Fody;
-using InlineIL.Fody.Processing;
 using InterfaceBaseInvoke.Fody.Extensions;
 using InterfaceBaseInvoke.Fody.Models;
 using InterfaceBaseInvoke.Fody.Support;

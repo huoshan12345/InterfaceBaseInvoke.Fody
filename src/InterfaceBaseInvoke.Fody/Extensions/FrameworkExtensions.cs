@@ -13,6 +13,10 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             value = pair.Value;
         }
 
+        public static TValue? GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+            where TKey : notnull
+            => dictionary.TryGetValue(key, out var value) ? value : default;
+
         public static TValue GetOrAddNew<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
             where TKey : notnull
             where TValue : new()

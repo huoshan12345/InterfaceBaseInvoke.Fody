@@ -4,28 +4,42 @@ namespace InterfaceBaseInvoke.Example
 {
     public interface IService
     {
-        void Call()
+        public const string Name = nameof(IService) + "." + nameof(Method);
+        void Method()
         {
-            Console.WriteLine("Call");
+            Console.WriteLine(Name);
         }
     }
 
-    public class Service : IService
+    public interface IService2
     {
-        public void Call()
+        void Method()
         {
-            Console.WriteLine("Before Call");
-            this.Base<IService>().Call();
-            Console.WriteLine("After Call");
+            Console.WriteLine(nameof(IService) + "." + nameof(Method));
         }
     }
 
-    class Program
+    public class Service : IService, IService2
     {
-        static void Main(string[] args)
+        public void Method()
+        {
+            throw new InvalidOperationException();
+        }
+
+        public void Invoke()
+        {
+            Console.WriteLine("Before " + IService.Name);
+            this.Base<IService>().Method();
+            Console.WriteLine("After " + IService.Name);
+        }
+    }
+
+    internal class Program
+    {
+        private static void Main(string[] args)
         {
             var service = new Service();
-            service.Call();
+            service.Invoke();
         }
     }
 }

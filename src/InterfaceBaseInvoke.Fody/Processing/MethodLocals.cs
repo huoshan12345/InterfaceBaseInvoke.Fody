@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Fody;
+using InterfaceBaseInvoke.Fody.Extensions;
 using InterfaceBaseInvoke.Fody.Models;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace InlineIL.Fody.Processing
+namespace InterfaceBaseInvoke.Fody.Processing
 {
     internal class MethodLocals
     {

@@ -6,11 +6,21 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
     {
         private interface I0
         {
+            int Compute(int number) => number;
+        }
+
+        private interface I1
+        {
             int Compute(int number) => number + 1;
         }
 
         private class C0 : I0
         {
+            public int Compute(int number)
+            {
+                throw new InvalidOperationException();
+            }
+
             public int InPlace()
             {
                 return this.Base<I0>().Compute(2 + (int)Math.Pow(1, 1));

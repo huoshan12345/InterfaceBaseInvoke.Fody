@@ -133,16 +133,14 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         private void ProcessAnchorMethod(Instruction instruction, out Instruction? nextInstruction)
         {
-            _log.Debug($"Processing: {instruction}");
-
             nextInstruction = null;
-            var method = (GenericInstanceMethod)instruction.Operand;
-            var interfaceType = method.GenericArguments.First();
+            var anchorMethod = (GenericInstanceMethod)instruction.Operand;
+            var interfaceType = anchorMethod.GenericArguments.First();
             var interfaceTypeDef = interfaceType.Resolve();
             if (!interfaceTypeDef.IsInterface)
                 throw new InstructionWeavingException(instruction, "The method Base<T> requires that T is an interface type, but got " + interfaceTypeDef.FullName);
 
-            var interfaceInstance = _il.GetArgumentPushInstructionsInSameBasicBlock(instruction).Single();
+            var stlocIndex = GetStlocIndex(instruction.Next);
 
             for (var p = instruction.Next; p != null; p = p.Next)
             {
@@ -151,19 +149,54 @@ namespace InterfaceBaseInvoke.Fody.Processing
                     nextInstruction = p;
 
                 if (p.OpCode != OpCodes.Callvirt
-                    || p.Operand is not MethodReference interfaceMethod)
+                    || p.Operand is not MethodReference method)
                     continue;
 
-                if (interfaceMethod.DeclaringType.FullName != interfaceTypeDef.FullName)
+                if (method.DeclaringType.FullName != interfaceTypeDef.FullName)
                     continue;
 
-                var interfaceMethodArgs = _il.GetArgumentPushInstructionsInSameBasicBlock(p);
-                if (interfaceMethodArgs.First() != instruction)
-                    continue;
+                var arg = _il.GetArgumentPushInstructionsInSameBasicBlock(p).First();
 
-                p.OpCode = OpCodes.Call; // change callvirt to call
+                if (arg == instruction)
+                {
+                    p.OpCode = OpCodes.Call; // change callvirt to call
+                    continue;
+                }
+
+                if (stlocIndex >= 0 && stlocIndex == GetLdlocIndex(arg))
+                {
+                    p.OpCode = OpCodes.Call; // change callvirt to call
+                    continue;
+                }
+
             }
             _il.Remove(instruction);
+        }
+
+        private static int GetStlocIndex(Instruction instruction)
+        {
+            return instruction.OpCode.Code switch
+            {
+                Code.Stloc or Code.Stloc_S => (int)instruction.Operand,
+                Code.Stloc_0 => 0,
+                Code.Stloc_1 => 1,
+                Code.Stloc_2 => 2,
+                Code.Stloc_3 => 3,
+                _ => -1
+            };
+        }
+
+        private static int GetLdlocIndex(Instruction instruction)
+        {
+            return instruction.OpCode.Code switch
+            {
+                Code.Ldloc or Code.Ldloc_S => (int)instruction.Operand,
+                Code.Ldloc_0 => 0,
+                Code.Ldloc_1 => 1,
+                Code.Ldloc_2 => 2,
+                Code.Ldloc_3 => 3,
+                _ => -1
+            };
         }
     }
 }

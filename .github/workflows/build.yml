@@ -21,19 +21,19 @@ jobs:
         run: dotnet restore -nodeReuse:false src/InterfaceBaseInvoke.Fody
 
       - name: Build Debug
-        run: dotnet build --configuration Debug -nodeReuse:false --no-restore src/InterfaceBaseInvoke.Fody
+        run: dotnet build --configuration Debug -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
 
       - name: Build Release
-        run: dotnet build --configuration Release -nodeReuse:false --no-restore src/InterfaceBaseInvoke.Fody
+        run: dotnet build --configuration Release -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
 
       - name: Test Debug
-        run: dotnet test --configuration Debug -nodeReuse:false --no-build src/InterfaceBaseInvoke.Fody
+        run: dotnet test --configuration Debug -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
 
       - name: Test Release
-        run: dotnet test --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.Fody
+        run: dotnet test --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
 
       - name: NuGet Pack
-        run: dotnet pack --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.Fody
+        run: dotnet pack --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
 
       - name: Upload NuGet
         uses: actions/upload-artifact@v2
