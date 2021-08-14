@@ -10,10 +10,10 @@ namespace InterfaceBaseInvoke.Tests
         protected override string ClassName { get; } = typeof(InvokeInClassTestCases).FullName!;
 
         [Fact]
-        public void Call_Test()
+        public void Invoke_InPlace_Test()
         {
             var obj = GetInstance();
-            Assert.Equal(1, obj.Call());
+            Assert.Equal(4, obj.InPlace());
         }
     }
 }

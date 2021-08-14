@@ -13,18 +13,20 @@ namespace InterfaceBaseInvoke.Fody.Processing
 {
     internal class MethodWeaver
     {
-        private const string TargetMethodDeclaringTypeName = "InterfaceBaseInvoke.ObjectExtension";
-        private const string TargetMethodName = "Base";
+        private const string AnchorMethodDeclaringTypeName = "InterfaceBaseInvoke.ObjectExtension";
+        private const string AnchorMethodName = "Base";
 
         private readonly ModuleDefinition _module;
         private readonly MethodDefinition _method;
         private readonly MethodWeaverLogger _log;
+        private readonly WeaverILProcessor _il;
         private Collection<Instruction> Instructions => _method.Body.Instructions;
 
         public MethodWeaver(ModuleDefinition module, MethodDefinition method, ILogger log)
         {
             _module = module;
             _method = method;
+            _il = new WeaverILProcessor(method);
             _log = new MethodWeaverLogger(log, _method);
         }
 
@@ -88,24 +90,31 @@ namespace InterfaceBaseInvoke.Fody.Processing
             }
         }
 
+        private static bool IsAnchorMethodCall(Instruction instruction)
+        {
+            if (instruction.OpCode != OpCodes.Call
+                || instruction.Operand is not GenericInstanceMethod method)
+                return false;
+
+            return method.DeclaringType.FullName == AnchorMethodDeclaringTypeName
+                   && method.Name == AnchorMethodName;
+        }
+
         private void ProcessImpl()
         {
             var instruction = Instructions.FirstOrDefault();
-            for (; instruction != null; instruction = instruction.Next)
+            Instruction? nextInstruction;
+
+            for (; instruction != null; instruction = nextInstruction)
             {
-                var nextInstruction = instruction.Next;
+                nextInstruction = instruction.Next;
 
-                if (instruction.OpCode != OpCodes.Call
-                    || instruction.Operand is not GenericInstanceMethod method)
-                    continue;
-
-                if (method.DeclaringType.FullName != TargetMethodDeclaringTypeName
-                    || method.Name != TargetMethodName)
+                if (!IsAnchorMethodCall(instruction))
                     continue;
 
                 try
                 {
-                    ProcessMethodCall(instruction, ref nextInstruction);
+                    ProcessAnchorMethod(instruction, out nextInstruction);
                 }
                 catch (InstructionWeavingException)
                 {
@@ -122,14 +131,39 @@ namespace InterfaceBaseInvoke.Fody.Processing
             }
         }
 
-        private void ProcessMethodCall(Instruction instruction, ref Instruction? nextInstruction)
+        private void ProcessAnchorMethod(Instruction instruction, out Instruction? nextInstruction)
         {
             _log.Debug($"Processing: {instruction}");
 
+            nextInstruction = null;
             var method = (GenericInstanceMethod)instruction.Operand;
             var interfaceType = method.GenericArguments.First();
+            var interfaceTypeDef = interfaceType.Resolve();
+            if (!interfaceTypeDef.IsInterface)
+                throw new InstructionWeavingException(instruction, "The method Base<T> requires that T is an interface type, but got " + interfaceTypeDef.FullName);
 
+            var interfaceInstance = _il.GetArgumentPushInstructionsInSameBasicBlock(instruction).Single();
 
+            for (var p = instruction.Next; p != null; p = p.Next)
+            {
+                // prepare for next ProcessAnchorMethod
+                if (nextInstruction != null && IsAnchorMethodCall(p))
+                    nextInstruction = p;
+
+                if (p.OpCode != OpCodes.Callvirt
+                    || p.Operand is not MethodReference interfaceMethod)
+                    continue;
+
+                if (interfaceMethod.DeclaringType.FullName != interfaceTypeDef.FullName)
+                    continue;
+
+                var interfaceMethodArgs = _il.GetArgumentPushInstructionsInSameBasicBlock(p);
+                if (interfaceMethodArgs.First() != instruction)
+                    continue;
+
+                p.OpCode = OpCodes.Call; // change callvirt to call
+            }
+            _il.Remove(instruction);
         }
     }
 }
