@@ -170,9 +170,9 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 else
                 {
                     var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
-                    //var methodName = methodRef.Name.Replace(methodRef.DeclaringType.FullName, "");
-                    //var m = new MethodReference(methodName, method.ReturnType, method.DeclaringType);
-                    _il.Replace(p, Instruction.Create(OpCodes.Call, method));
+                    var ins = Instruction.Create(OpCodes.Call, method);
+                    _il.Replace(p, ins);
+                    p = ins;
                 }
             }
             _il.Remove(instruction);
