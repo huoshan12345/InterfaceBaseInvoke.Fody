@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using InterfaceBaseInvoke.Fody.Models;
+using Mono.Cecil;
 
 namespace InterfaceBaseInvoke.Fody.Extensions
 {
@@ -70,5 +73,10 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
         public static Expression<TDelegate> Lambda<TDelegate>(this Expression e, params ParameterExpression[] parameters) where TDelegate : Delegate
             => Expression.Lambda<TDelegate>(e, parameters);
+
+        public static TypeReference ToTypeReference(this Type type, ModuleDefinition module)
+        {
+            return new(type.Namespace, type.Name, module, module.GetCoreLibrary());
+        }
     }
 }

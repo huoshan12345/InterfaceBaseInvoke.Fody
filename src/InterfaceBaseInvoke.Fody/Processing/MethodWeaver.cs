@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Fody;
 using InterfaceBaseInvoke.Fody.Extensions;
+using InterfaceBaseInvoke.Fody.Models;
 using InterfaceBaseInvoke.Fody.Support;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -22,6 +23,8 @@ namespace InterfaceBaseInvoke.Fody.Processing
         private readonly MethodDefinition _method;
         private readonly MethodWeaverLogger _log;
         private readonly WeaverILProcessor _il;
+        private readonly TypeReference _runtimeMethodHandle;
+        private readonly MethodReference _getMethodPtr;
         private Collection<Instruction> Instructions => _method.Body.Instructions;
 
         public MethodWeaver(ModuleDefinition module, MethodDefinition method, ILogger log)
@@ -30,6 +33,8 @@ namespace InterfaceBaseInvoke.Fody.Processing
             _method = method;
             _il = new WeaverILProcessor(method);
             _log = new MethodWeaverLogger(log, _method);
+            _runtimeMethodHandle = typeof(RuntimeMethodHandle).ToTypeReference(module);
+            _getMethodPtr = MethodRefBuilder.PropertyGet(module, _runtimeMethodHandle, nameof(RuntimeMethodHandle.Value)).Build();
         }
 
         public static bool NeedsProcessing(ModuleDefinition module, MethodDefinition method)
@@ -170,9 +175,31 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 else
                 {
                     var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
-                    var ins = Instruction.Create(OpCodes.Call, method);
-                    _il.Replace(p, ins);
-                    p = ins;
+                    var instructions = new List<Instruction>(4)
+                    {
+                        _il.Create(OpCodes.Ldtoken, method),
+                        _il.Create(OpCodes.Castclass, _runtimeMethodHandle),
+                        _il.Create(OpCodes.Call, _getMethodPtr),
+                    };
+                    if (Environment.Is64BitProcess)
+                    {
+                        instructions.Add(_il.Create(OpCodes.Conv_I8));
+                    }
+                    else
+                    {
+                        instructions.Add(_il.Create(OpCodes.Conv_I4));
+                    }
+
+                    var sig = new StandAloneMethodSigBuilder(CallingConventions.Standard, method).Build();
+                    instructions.Add(_il.Create(OpCodes.Calli, sig));
+
+                    var cur = p;
+                    foreach (var ins in instructions)
+                    {
+                        cur = _il.InsertAfter(cur, ins);
+                    }
+                    _il.Remove(p);
+                    p = cur;
                 }
             }
             _il.Remove(instruction);

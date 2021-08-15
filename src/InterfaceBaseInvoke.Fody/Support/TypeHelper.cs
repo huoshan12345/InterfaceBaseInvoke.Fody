@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using InterfaceBaseInvoke.Fody.Extensions;
+using Mono.Cecil;
 
 namespace InterfaceBaseInvoke.Fody.Support
 {
-    public static class TypeHelper
+    internal static class TypeHelper
     {
         public static MethodInfo GetMethod(Assembly assembly, string typeName, string methodName, bool isStatic, bool isPublic)
         {

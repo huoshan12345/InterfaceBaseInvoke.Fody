@@ -36,13 +36,21 @@ namespace InterfaceBaseInvoke.Fody.Processing
             UpdateReferences(instruction, newRef);
         }
 
-        public void Replace(Instruction oldInstruction, Instruction newInstruction, bool mapToBasicBlock = false)
+        public Instruction InsertAfter(Instruction target, Instruction instruction)
+        {
+            _il.InsertAfter(target, instruction);
+            return instruction;
+        }
+
+        public Instruction Replace(Instruction oldInstruction, Instruction newInstruction, bool mapToBasicBlock = false)
         {
             _il.Replace(oldInstruction, newInstruction);
             UpdateReferences(oldInstruction, newInstruction);
 
             if (mapToBasicBlock)
                 _basicBlocks[newInstruction] = GetBasicBlock(oldInstruction);
+
+            return newInstruction;
         }
 
         public void DeclareLocals(IEnumerable<LocalVarBuilder> locals)
