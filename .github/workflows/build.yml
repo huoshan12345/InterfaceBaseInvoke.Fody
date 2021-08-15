@@ -18,7 +18,7 @@ jobs:
           dotnet-version: 5.0.x
 
       - name: NuGet Restore
-        run: dotnet restore -nodeReuse:false src/InterfaceBaseInvoke.Fody
+        run: dotnet restore -nodeReuse:false src/InterfaceBaseInvoke.sln
 
       - name: Build Debug
         run: dotnet build --configuration Debug -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
