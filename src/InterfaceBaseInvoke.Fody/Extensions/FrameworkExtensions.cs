@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace InterfaceBaseInvoke.Fody.Extensions
 {
@@ -64,5 +65,10 @@ namespace InterfaceBaseInvoke.Fody.Extensions
         }
 
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items) => new(items);
+
+        public static Expression Convert(this Expression e, Type type) => Expression.Convert(e, type);
+
+        public static Expression<TDelegate> Lambda<TDelegate>(this Expression e, params ParameterExpression[] parameters) where TDelegate : Delegate
+            => Expression.Lambda<TDelegate>(e, parameters);
     }
 }

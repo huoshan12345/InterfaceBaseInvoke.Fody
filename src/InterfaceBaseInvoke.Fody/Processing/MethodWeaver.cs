@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Fody;
 using InterfaceBaseInvoke.Fody.Extensions;
 using InterfaceBaseInvoke.Fody.Support;
@@ -140,63 +142,56 @@ namespace InterfaceBaseInvoke.Fody.Processing
             if (!interfaceTypeDef.IsInterface)
                 throw new InstructionWeavingException(instruction, "The method Base<T> requires that T is an interface type, but got " + interfaceTypeDef.FullName);
 
-            var stlocIndex = GetStlocIndex(instruction.Next);
+            if (IsStloc(instruction.Next))
+                throw new InstructionWeavingException(instruction, "The interface methods to be base-invoked requires that they are called fluently after Base<T>.");
 
             for (var p = instruction.Next; p != null; p = p.Next)
             {
                 // prepare for next ProcessAnchorMethod
-                if (nextInstruction != null && IsAnchorMethodCall(p))
+                if (nextInstruction == null && IsAnchorMethodCall(p))
                     nextInstruction = p;
 
                 if (p.OpCode != OpCodes.Callvirt
-                    || p.Operand is not MethodReference method)
+                    || p.Operand is not MethodReference methodRef)
                     continue;
 
-                if (method.DeclaringType.FullName != interfaceTypeDef.FullName)
+                if (!interfaceTypeDef.IsAssignableTo(methodRef.DeclaringType))
                     continue;
 
                 var arg = _il.GetArgumentPushInstructionsInSameBasicBlock(p).First();
 
-                if (arg == instruction)
-                {
-                    p.OpCode = OpCodes.Call; // change callvirt to call
+                if (arg != instruction)
                     continue;
-                }
 
-                if (stlocIndex >= 0 && stlocIndex == GetLdlocIndex(arg))
+                if (interfaceTypeDef.IsEqualTo(methodRef.DeclaringType))
                 {
-                    p.OpCode = OpCodes.Call; // change callvirt to call
-                    continue;
+                    p.OpCode = OpCodes.Call;
                 }
-
+                else
+                {
+                    var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
+                    //var methodName = methodRef.Name.Replace(methodRef.DeclaringType.FullName, "");
+                    //var m = new MethodReference(methodName, method.ReturnType, method.DeclaringType);
+                    _il.Replace(p, Instruction.Create(OpCodes.Call, method));
+                }
             }
             _il.Remove(instruction);
         }
 
-        private static int GetStlocIndex(Instruction instruction)
+        private static bool IsStloc(Instruction? instruction)
         {
-            return instruction.OpCode.Code switch
+            switch (instruction?.OpCode.Code)
             {
-                Code.Stloc or Code.Stloc_S => (int)instruction.Operand,
-                Code.Stloc_0 => 0,
-                Code.Stloc_1 => 1,
-                Code.Stloc_2 => 2,
-                Code.Stloc_3 => 3,
-                _ => -1
-            };
-        }
-
-        private static int GetLdlocIndex(Instruction instruction)
-        {
-            return instruction.OpCode.Code switch
-            {
-                Code.Ldloc or Code.Ldloc_S => (int)instruction.Operand,
-                Code.Ldloc_0 => 0,
-                Code.Ldloc_1 => 1,
-                Code.Ldloc_2 => 2,
-                Code.Ldloc_3 => 3,
-                _ => -1
-            };
+                case Code.Stloc:
+                case Code.Stloc_S:
+                case Code.Stloc_0:
+                case Code.Stloc_1:
+                case Code.Stloc_2:
+                case Code.Stloc_3:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

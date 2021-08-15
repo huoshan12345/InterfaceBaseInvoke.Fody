@@ -4,22 +4,28 @@ namespace InterfaceBaseInvoke.Example
 {
     public interface IService
     {
-        public const string Name = nameof(IService) + "." + nameof(Method);
-        void Method()
+        void Method();
+    }
+
+    public interface IService1 : IService
+    {
+        public const string Name = nameof(IService1) + "." + nameof(Method);
+        void IService.Method()
         {
             Console.WriteLine(Name);
         }
     }
 
-    public interface IService2
+    public interface IService2 : IService
     {
-        void Method()
+        public const string Name = nameof(IService2) + "." + nameof(Method);
+        void IService.Method()
         {
-            Console.WriteLine(nameof(IService) + "." + nameof(Method));
+            Console.WriteLine(Name);
         }
     }
 
-    public class Service : IService, IService2
+    public class Service : IService1, IService2
     {
         public void Method()
         {
@@ -28,9 +34,10 @@ namespace InterfaceBaseInvoke.Example
 
         public void Invoke()
         {
-            Console.WriteLine("Before " + IService.Name);
-            this.Base<IService>().Method();
-            Console.WriteLine("After " + IService.Name);
+            Console.WriteLine("Start invoking...");
+            this.Base<IService1>().Method();
+            this.Base<IService2>().Method();
+            Console.WriteLine("End invoking.");
         }
     }
 

@@ -10,24 +10,31 @@ namespace InterfaceBaseInvoke.Tests
         protected override string ClassName { get; } = typeof(InvokeInClassTestCases).FullName!;
 
         [Fact]
-        public void Invoke_InPlace_Test()
+        public void DefaultMethod_Call()
         {
-            var obj = GetInstance();
-            Assert.Equal(3, obj.InPlace());
+            string value = GetInstance().DefaultMethod_Call();
+            Assert.Equal("IDefaultMethod.Method.29.InheritIDefaultMethod.Call", value);
         }
 
         [Fact]
-        public void AfterAssignment()
+        public void DefaultMethod_MutipleCall()
         {
-            var obj = GetInstance();
-            Assert.Equal(3, obj.AfterAssignment());
+            string value = GetInstance().DefaultMethod_MutipleCall();
+            Assert.Equal("IDefaultMethod.Method.1.a----IDefaultMethod.Method.2.b", value);
         }
 
         [Fact]
-        public void Multiple()
+        public void OverridedMethod_Call()
         {
-            var obj = GetInstance();
-            Assert.Equal((1, 1, 1, 1), obj.Multiple());
+            string value = GetInstance().OverridedMethod_Call();
+            Assert.Equal("IDefaultMethod.Method.29.InheritIDefaultMethod.Call", value);
+        }
+
+        [Fact]
+        public void OverridedMethod_MutipleCall()
+        {
+            string value = GetInstance().OverridedMethod_MutipleCall();
+            Assert.Equal("IDefaultMethod.Method.29.InheritIDefaultMethod.Call", value);
         }
     }
 }

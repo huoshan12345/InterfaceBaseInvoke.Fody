@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Fody;
 using InterfaceBaseInvoke.Fody.Support;
@@ -469,7 +471,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
         public static bool IsInlineILAssembly([NotNullWhen(true)] this AssemblyNameReference? assembly)
             => assembly?.Name == "InlineIL";
-        
+
         public static SequencePoint? GetInputSequencePoint(this Instruction? instruction, MethodDefinition method)
         {
             if (instruction == null)
@@ -480,6 +482,46 @@ namespace InterfaceBaseInvoke.Fody.Extensions
                 : Enumerable.Empty<SequencePoint>();
 
             return sequencePoints.LastOrDefault(sp => sp.Offset <= instruction.Offset);
+        }
+
+        private static readonly Func<TypeReference, TypeReference, bool> _typeRefEqualFunc = CreateTypeRefEqualFunc();
+
+        private static Func<TypeReference, TypeReference, bool> CreateTypeRefEqualFunc()
+        {
+            var assembly = typeof(TypeReference).Assembly;
+            var method = TypeHelper.GetMethod(assembly, "Mono.Cecil.TypeReferenceEqualityComparer", "AreEqual", true, true);
+            var paras = new[]
+            {
+                Expression.Parameter(typeof(TypeReference)),
+                Expression.Parameter(typeof(TypeReference)),
+            };
+            var args = paras.Append(Expression.Constant(0).Convert(assembly.GetType("Mono.Cecil.TypeComparisonMode")));
+            var call = Expression.Call(method, args);
+            return call.Lambda<Func<TypeReference, TypeReference, bool>>(paras).Compile();
+        }
+
+        public static bool IsEqualTo(this TypeReference a, TypeReference b)
+        {
+            return _typeRefEqualFunc(a, b);
+        }
+
+        public static bool IsAssignableTo(this TypeDefinition derivedTypeDef, TypeReference baseTypeRef)
+        {
+            if (derivedTypeDef.IsEqualTo(baseTypeRef))
+                return true;
+
+            return derivedTypeDef.Interfaces.Any(m => m.InterfaceType.IsEqualTo(baseTypeRef));
+        }
+
+        public static MethodDefinition GetInterfaceDefaultMethod(this TypeDefinition typeDef, MethodReference methodRef)
+        {
+            var methods = typeDef.Methods.Where(m => m.Overrides.Any(x => x.FullName == methodRef.FullName)).ToList();
+            return methods.Count switch
+            {
+                0   => throw new MissingMethodException(methodRef.Name),
+                > 1 => throw new AmbiguousMatchException($"Found more than one method in type {typeDef.Name} by name " + methodRef.Name),
+                _   => methods[0]
+            };
         }
     }
 }

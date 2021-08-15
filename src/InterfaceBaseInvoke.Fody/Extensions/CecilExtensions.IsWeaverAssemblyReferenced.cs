@@ -61,10 +61,10 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             if (method.ReturnType.IsWeaverAssemblyReferenced(module) || method.HasParameters && method.Parameters.Any(i => i.IsWeaverAssemblyReferenced(module)))
                 return true;
 
-            if (method is IGenericInstance genericInstance && genericInstance.HasGenericArguments && genericInstance.GenericArguments.Any(i => i.IsWeaverAssemblyReferenced(module)))
+            if (method is IGenericInstance { HasGenericArguments: true } genericInstance && genericInstance.GenericArguments.Any(i => i.IsWeaverAssemblyReferenced(module)))
                 return true;
 
-            if (method is IGenericParameterProvider generic && generic.HasGenericParameters && generic.GenericParameters.Any(i => i.IsWeaverAssemblyReferenced(module)))
+            if (method is IGenericParameterProvider { HasGenericParameters: true } generic && generic.GenericParameters.Any(i => i.IsWeaverAssemblyReferenced(module)))
                 return true;
 
             if (method is MethodReference methodRef)
