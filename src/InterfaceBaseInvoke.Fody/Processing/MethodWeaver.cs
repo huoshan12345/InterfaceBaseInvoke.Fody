@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Fody;
 using InterfaceBaseInvoke.Fody.Extensions;
 using InterfaceBaseInvoke.Fody.Models;
@@ -157,14 +158,11 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
                 if (!interfaceTypeDef.IsAssignableTo(methodRef.DeclaringType))
                     continue;
-
-                if (_method.FullName.Contains("InvokeOutsideTestCases::OverridedMethod_MutipleCall"))
-                {
-
-                }
-
-                var args = _il.GetArgumentPushInstructionsInSameBasicBlock(p);
+                
+                var graph = Instructions.BuildGraph();
+                var args = p.GetArgumentPushInstructions(Instructions, graph);
                 var arg = args.First();
+
                 if (arg != instruction)
                     continue;
 
@@ -208,6 +206,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 _il.Create(OpCodes.Br, calli),
                 to32,
                 calli,
+                Instruction.Create(OpCodes.Nop)
             };
 
             var cur = _il.InsertAfter(invokeInstruction, instructions);

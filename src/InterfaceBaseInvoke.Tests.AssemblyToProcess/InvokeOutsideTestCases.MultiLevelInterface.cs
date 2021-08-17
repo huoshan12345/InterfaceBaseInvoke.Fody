@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
@@ -8,22 +9,7 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
     {
         private class InheritIOverridedMethod : IOverridedMethod
         {
-            public string Method(int x, string y)
-            {
-                throw new InvalidOperationException();
-            }
-
-            public string Call()
-            {
-                return this.Base<IOverridedMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(InheritIOverridedMethod)}.{nameof(Call)}");
-            }
-
-            public string MutipleCall()
-            {
-                var a = this.Base<IOverridedMethod>().Method(1, "a");
-                var b = this.Base<IOverridedMethod>().Method(2, "b");
-                return a + "----" + b;
-            }
+            public string Method(int x, string y) => throw new InvalidOperationException();
         }
 
         public string OverridedMethod_Call()
@@ -38,6 +24,38 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
             var a = obj.Base<IOverridedMethod>().Method(1, "a");
             var b = obj.Base<IOverridedMethod>().Method(2, "b");
             return a + "----" + b;
+        }
+
+        public string OverridedMethod_Call_Jump()
+        {
+            var obj = new InheritIOverridedMethod();
+            var result = "----";
+            if (Environment.Is64BitProcess)
+            {
+                result += obj.Base<IOverridedMethod>().Method(1, "a");
+            }
+            else
+            {
+                result += obj.Base<IOverridedMethod>().Method(2, "b");
+            }
+            result += "----";
+            return result;
+        }
+
+        public string OverridedMethod_Call_JumpInInvocation()
+        {
+            var obj = new InheritIOverridedMethod();
+            var result = "----";
+            if (Environment.Is64BitProcess)
+            {
+                result += obj.Base<IOverridedMethod>().Method(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 11 : 10, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "aa" : "ab");
+            }
+            else
+            {
+                result += obj.Base<IOverridedMethod>().Method(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 21 : 20, RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ba" : "bb");
+            }
+            result += "----";
+            return result;
         }
     }
 }

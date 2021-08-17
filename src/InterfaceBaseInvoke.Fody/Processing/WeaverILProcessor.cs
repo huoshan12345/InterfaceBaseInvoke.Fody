@@ -260,7 +260,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 throw ExceptionInvalidOperand(opCode);
             }
         }
-        
+
         private static WeavingException ExceptionInvalidOperand(OpCode opCode)
         {
             switch (opCode.OperandType)

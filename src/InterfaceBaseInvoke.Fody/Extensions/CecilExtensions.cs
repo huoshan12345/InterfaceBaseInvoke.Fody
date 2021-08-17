@@ -7,9 +7,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Fody;
+using InterfaceBaseInvoke.Fody.Models;
 using InterfaceBaseInvoke.Fody.Support;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Collections.Generic;
 
 namespace InterfaceBaseInvoke.Fody.Extensions
 {
@@ -193,7 +195,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             result.DeclaringType = genericDeclType;
             return result;
         }
-        
+
         public static Instruction[] GetArgumentPushInstructions(this Instruction instruction)
         {
             if (instruction.OpCode.FlowControl != FlowControl.Call)
@@ -280,6 +282,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
                 case StackBehaviour.Pop0:
                     return 0;
 
+                case StackBehaviour.Varpop:
                 case StackBehaviour.Popi:
                 case StackBehaviour.Popref:
                 case StackBehaviour.Pop1:
@@ -327,6 +330,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
                 case StackBehaviour.Push0:
                     return 0;
 
+                case StackBehaviour.Varpush:
                 case StackBehaviour.Push1:
                 case StackBehaviour.Pushi:
                 case StackBehaviour.Pushi8:
@@ -420,10 +424,149 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             var methods = typeDef.Methods.Where(m => m.Overrides.Any(x => x.FullName == methodRef.FullName)).ToList();
             return methods.Count switch
             {
-                0   => throw new MissingMethodException(methodRef.Name),
+                0 => throw new MissingMethodException(methodRef.Name),
                 > 1 => throw new AmbiguousMatchException($"Found more than one method in type {typeDef.Name} by name " + methodRef.Name),
-                _   => methods[0]
+                _ => methods[0]
             };
+        }
+
+        public static GraphNode<int> BuildGraph(this IList<Instruction> instructions)
+        {
+            var dic = instructions.Select((m, i) => (m, i)).ToDictionary(x => x.m, x => x.i);
+            var root = new GraphNode<int>(0);
+            var queue = new Queue<GraphNode<int>>();
+            queue.Enqueue(root);
+
+            while (queue.Count != 0)
+            {
+                var node = queue.Dequeue();
+                var index = node.Value;
+                var instruction = instructions[index];
+                switch (instruction.OpCode.FlowControl)
+                {
+                    case FlowControl.Cond_Branch:
+                    {
+                        AddBranchOperand();
+                        AddNext();
+                        break;
+                    }
+                    case FlowControl.Branch:
+                    {
+                        AddBranchOperand();
+                        break;
+                    }
+                    case FlowControl.Return:
+                    case FlowControl.Throw:
+                        break;
+
+                    case FlowControl.Break:
+                    case FlowControl.Meta:
+                    case FlowControl.Next:
+                    case FlowControl.Phi:
+                    case FlowControl.Call when instruction.OpCode != OpCodes.Jmp:
+                    default:
+                    {
+                        AddNext();
+                        break;
+                    }
+                }
+
+                void AddBranchOperand()
+                {
+                    var ins = (Instruction)instruction!.Operand;
+                    var i = dic![ins];
+                    var child = GraphNode.Create(i);
+                    node!.Children.Add(child);
+                    queue!.Enqueue(child);
+                }
+
+                void AddNext()
+                {
+                    var nextIndex = index + 1;
+                    if (nextIndex >= instructions.Count)
+                        return;
+
+                    var child = GraphNode.Create(nextIndex);
+                    node!.Children.Add(child);
+                    queue!.Enqueue(child);
+                }
+
+            }
+
+            return root;
+        }
+
+        public static Instruction[] GetArgumentPushInstructions(this Instruction instruction, IList<Instruction> instructions, GraphNode<int> graph)
+        {
+            if (instruction.OpCode.FlowControl != FlowControl.Call)
+                throw new InstructionWeavingException(instruction, "Expected a call instruction");
+
+            var method = (IMethodSignature)instruction.Operand;
+            var argCount = GetArgCount(instruction.OpCode, method);
+
+            if (argCount == 0)
+                return Array.Empty<Instruction>();
+
+            var stack = new Stack<Instruction>();
+            Dfs(instruction, instructions, graph, ref stack);
+
+            if (stack.Count < argCount)
+            {
+                throw new InstructionWeavingException(instruction, $"The stack count {stack.Count} is less than the expected argument count {argCount} for {instruction}");
+            }
+
+            return stack.Take(argCount).Reverse().ToArray();
+        }
+
+        private static bool Dfs(in Instruction instruction, in IList<Instruction> instructions, GraphNode<int> node, ref Stack<Instruction> stack)
+        {
+            var index = node.Value;
+            if (instruction == instructions[index])
+            {
+                return true;
+            }
+
+            var cur = instructions[index];
+            var popCount = GetPopCount(cur);
+            var pushCount = GetPushCount(cur);
+
+            if (stack.Count < popCount)
+            {
+                throw new InstructionWeavingException(cur, $"Could not pop {popCount} values from stack whose count is {stack.Count} due to {cur}");
+            }
+
+            if (pushCount > 2)
+            {
+                throw new InstructionWeavingException(cur, $"Unknown instruction {cur} that pops {popCount} values from stack");
+            }
+
+            for (var i = 0; i < popCount; i++)
+            {
+                stack.Pop();
+            }
+
+            for (var i = 0; i < pushCount; i++)
+            {
+                stack.Push(cur);
+            }
+
+            if (node.Children.Count == 1)
+            {
+                return Dfs(instruction, instructions, node.Children[0], ref stack);
+            }
+            else if (node.Children.Count > 1)
+            {
+                foreach (var child in node.Children)
+                {
+                    var perservedStack = stack.Clone();
+                    if (!Dfs(instruction, instructions, child, ref perservedStack))
+                        continue;
+                    stack = perservedStack;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

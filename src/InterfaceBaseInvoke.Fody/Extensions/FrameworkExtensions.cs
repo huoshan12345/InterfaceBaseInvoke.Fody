@@ -29,5 +29,19 @@ namespace InterfaceBaseInvoke.Fody.Extensions
         {
             return new TypeRefBuilder(module, type.Assembly.GetName().Name, type.FullName ?? type.Name).Build();
         }
+
+        /// <summary>
+        /// see details in https://stackoverflow.com/questions/7391348/c-sharp-clone-a-stack
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="original"></param>
+        /// <returns></returns>
+        public static Stack<T> Clone<T>(this Stack<T> original)
+        {
+            var arr = new T[original.Count];
+            original.CopyTo(arr, 0);
+            Array.Reverse(arr);
+            return new Stack<T>(arr);
+        }
     }
 }

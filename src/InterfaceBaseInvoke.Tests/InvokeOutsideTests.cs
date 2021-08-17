@@ -34,5 +34,19 @@ namespace InterfaceBaseInvoke.Tests
             string value = GetInstance().OverridedMethod_MutipleCall();
             Assert.Equal("IOverridedMethod.Method.1.a----IOverridedMethod.Method.2.b", value);
         }
+
+        [Fact]
+        public void OverridedMethod_Call_Jump()
+        {
+            string value = GetInstance().OverridedMethod_Call_Jump();
+            Assert.Equal("----IOverridedMethod.Method.1.a----", value);
+        }
+
+        [Fact]
+        public void OverridedMethod_Call_JumpInInvocation()
+        {
+            string value = GetInstance().OverridedMethod_Call_JumpInInvocation();
+            Assert.Equal("----IOverridedMethod.Method.11.aa----", value);
+        }
     }
 }

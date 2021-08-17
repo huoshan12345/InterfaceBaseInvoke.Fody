@@ -8,10 +8,7 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
     {
         private class InheritIOverridedMethod : IOverridedMethod
         {
-            public string Method(int x, string y)
-            {
-                throw new InvalidOperationException();
-            }
+            public string Method(int x, string y) => throw new InvalidOperationException();
 
             public string Call()
             {
