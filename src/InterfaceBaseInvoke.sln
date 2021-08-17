@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{41D4FE14
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{799882D7-B4CB-44E1-BD0A-4872D4E17918}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceBaseInvoke.Example", "InterfaceBaseInvoke.Example\InterfaceBaseInvoke.Example.csproj", "{A9ECA0B9-9E8D-44AA-B55E-8F777C705E9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceBaseInvoke.Example", "InterfaceBaseInvoke.Example\InterfaceBaseInvoke.Example.csproj", "{A9ECA0B9-9E8D-44AA-B55E-8F777C705E9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
