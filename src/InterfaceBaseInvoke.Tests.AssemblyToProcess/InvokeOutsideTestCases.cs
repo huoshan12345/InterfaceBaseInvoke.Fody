@@ -1,29 +1,31 @@
 ﻿using System;
-using System.Linq.Expressions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
-    public class InvokeOutsideTestCases
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public partial class InvokeOutsideTestCases
     {
-        private interface I0
+        private class InheritIDefaultMethod : IDefaultMethod
         {
-            int Compute(int number) => number + 1;
+            public string Method(int x, string y)
+            {
+                throw new InvalidOperationException();
+            }
         }
 
-        private class C0 : I0
+        public string DefaultMethod_Call()
         {
+            var obj = new InheritIDefaultMethod();
+            return obj.Base<IDefaultMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(InheritIDefaultMethod)}.{nameof(DefaultMethod_Call)}");
         }
 
-        public int Call0()
+        public string DefaultMethod_MutipleCall()
         {
-            I0 c = new C0();
-            return c.Compute(2 + (int)Math.Pow(1, 1));
-        }
-
-        public int Call()
-        {
-            var c = new C0();
-            return c.Base<I0>().Compute(2 + (int)Math.Pow(1, 1));
+            var obj = new InheritIDefaultMethod();
+            var a = obj.Base<IDefaultMethod>().Method(1, "a");
+            var b = obj.Base<IDefaultMethod>().Method(2, "b");
+            return a + "----" + b;
         }
     }
 }

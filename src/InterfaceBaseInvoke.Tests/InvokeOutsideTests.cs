@@ -8,10 +8,31 @@ namespace InterfaceBaseInvoke.Tests
         protected override string ClassName { get; } = typeof(InvokeOutsideTestCases).FullName!;
 
         [Fact]
-        public void Call_Expression_Test()
+        public void DefaultMethod_Call()
         {
-            var obj = GetInstance();
-            Assert.Equal(1, obj.Call_Expression());
+            string value = GetInstance().DefaultMethod_Call();
+            Assert.Equal("IDefaultMethod.Method.29.InheritIDefaultMethod.DefaultMethod_Call", value);
+        }
+
+        [Fact]
+        public void DefaultMethod_MutipleCall()
+        {
+            string value = GetInstance().DefaultMethod_MutipleCall();
+            Assert.Equal("IDefaultMethod.Method.1.a----IDefaultMethod.Method.2.b", value);
+        }
+
+        [Fact]
+        public void OverridedMethod_Call()
+        {
+            string value = GetInstance().OverridedMethod_Call();
+            Assert.Equal("IOverridedMethod.Method.29.InheritIOverridedMethod.OverridedMethod_Call", value);
+        }
+
+        [Fact]
+        public void OverridedMethod_MutipleCall()
+        {
+            string value = GetInstance().OverridedMethod_MutipleCall();
+            Assert.Equal("IOverridedMethod.Method.1.a----IOverridedMethod.Method.2.b", value);
         }
     }
 }
