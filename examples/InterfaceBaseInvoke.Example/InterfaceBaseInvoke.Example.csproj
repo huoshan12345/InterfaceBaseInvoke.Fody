@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -10,6 +10,12 @@
     <PackageReference Include="Fody" Version="$(FodyVersion)" PrivateAssets="all" />
     <ProjectReference Include="..\InterfaceBaseInvoke\InterfaceBaseInvoke.csproj" />
     <WeaverFiles Include="$(SolutionDir)InterfaceBaseInvoke.Fody\bin\$(Configuration)\netstandard2.0\InterfaceBaseInvoke.Fody.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="FodyWeavers.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

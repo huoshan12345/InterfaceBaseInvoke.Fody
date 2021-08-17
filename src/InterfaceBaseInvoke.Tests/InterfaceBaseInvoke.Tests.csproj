@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <DisableFody>true</DisableFody>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
