@@ -17,14 +17,11 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
-      - name: NuGet Restore
-        run: dotnet restore -nodeReuse:false src/InterfaceBaseInvoke.sln
-
       - name: Build Debug
-        run: dotnet build --configuration Debug -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
+        run: dotnet build --configuration Debug -nodeReuse:false src/InterfaceBaseInvoke.sln
 
       - name: Build Release
-        run: dotnet build --configuration Release -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
+        run: dotnet build --configuration Release -nodeReuse:false src/InterfaceBaseInvoke.sln
 
       - name: Test Debug
         run: dotnet test --configuration Debug -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
