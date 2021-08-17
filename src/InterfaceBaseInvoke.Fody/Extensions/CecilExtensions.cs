@@ -193,7 +193,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             result.DeclaringType = genericDeclType;
             return result;
         }
-
+        
         public static Instruction[] GetArgumentPushInstructions(this Instruction instruction)
         {
             if (instruction.OpCode.FlowControl != FlowControl.Call)
@@ -217,6 +217,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
         private static Instruction BackwardScanPush(ref Instruction currentInstruction)
         {
             var startInstruction = currentInstruction;
+            Instruction? result = null;
             var stackToConsume = 1;
 
             while (stackToConsume > 0)
@@ -240,12 +241,8 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
                 stackToConsume -= pushCount;
 
-                if (stackToConsume == 0)
-                {
-                    var result = currentInstruction;
-                    currentInstruction = currentInstruction.Previous;
-                    return result;
-                }
+                if (stackToConsume == 0 && result == null)
+                    result = currentInstruction;
 
                 if (stackToConsume < 0)
                     throw new InstructionWeavingException(startInstruction, $"Could not locate call argument due to {currentInstruction} which pops an unexpected number of items from the stack");
@@ -254,7 +251,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
                 currentInstruction = currentInstruction.Previous;
             }
 
-            throw new InstructionWeavingException(startInstruction, "Could not locate call argument, reached beginning of method");
+            return result ?? throw new InstructionWeavingException(startInstruction, "Could not locate call argument, reached beginning of method");
         }
 
         private static int GetArgCount(OpCode opCode, IMethodSignature method)
@@ -423,9 +420,9 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             var methods = typeDef.Methods.Where(m => m.Overrides.Any(x => x.FullName == methodRef.FullName)).ToList();
             return methods.Count switch
             {
-                0 => throw new MissingMethodException(methodRef.Name),
+                0   => throw new MissingMethodException(methodRef.Name),
                 > 1 => throw new AmbiguousMatchException($"Found more than one method in type {typeDef.Name} by name " + methodRef.Name),
-                _ => methods[0]
+                _   => methods[0]
             };
         }
     }
