@@ -121,7 +121,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
                 try
                 {
-                    ProcessAnchorMethod(instruction, out nextInstruction);
+                    nextInstruction = ProcessAnchorMethod(instruction);
                 }
                 catch (InstructionWeavingException)
                 {
@@ -138,9 +138,8 @@ namespace InterfaceBaseInvoke.Fody.Processing
             }
         }
 
-        private void ProcessAnchorMethod(Instruction instruction, out Instruction? nextInstruction)
+        private Instruction? ProcessAnchorMethod(Instruction instruction)
         {
-            nextInstruction = null;
             var anchorMethod = (GenericInstanceMethod)instruction.Operand;
             var interfaceType = anchorMethod.GenericArguments.First();
             var interfaceTypeDef = interfaceType.Resolve();
@@ -152,10 +151,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             for (var p = instruction.Next; p != null; p = p.Next)
             {
-                // prepare for next ProcessAnchorMethod
-                if (nextInstruction == null && IsAnchorMethodCall(p))
-                    nextInstruction = p;
-
                 if (p.OpCode != OpCodes.Callvirt
                     || p.Operand is not MethodReference methodRef)
                     continue;
@@ -163,48 +158,61 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 if (!interfaceTypeDef.IsAssignableTo(methodRef.DeclaringType))
                     continue;
 
-                var arg = _il.GetArgumentPushInstructionsInSameBasicBlock(p).First();
+                if (_method.FullName.Contains("InvokeOutsideTestCases::OverridedMethod_MutipleCall"))
+                {
 
+                }
+
+                var args = _il.GetArgumentPushInstructionsInSameBasicBlock(p);
+                var arg = args.First();
                 if (arg != instruction)
                     continue;
 
-                if (interfaceTypeDef.IsEqualTo(methodRef.DeclaringType))
-                {
-                    p.OpCode = OpCodes.Call;
-                }
-                else
-                {
-                    var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
-                    var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
-                    var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
-                    var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, method).Build();
-
-                    var to64 = _il.Create(OpCodes.Call, Methods.ToInt64);
-                    var to32 = _il.Create(OpCodes.Call, Methods.ToInt32);
-                    var calli = _il.Create(OpCodes.Calli, callSite);
-
-                    var instructions = new List<Instruction>(4)
-                    {
-                        _il.Create(OpCodes.Ldtoken, method),
-                        Instruction.Create(OpCodes.Stloc, handle),
-                        Instruction.Create(OpCodes.Ldloca, handle),
-                        _il.Create(OpCodes.Call, Methods.GetFunctionPointer),
-                        Instruction.Create(OpCodes.Stloc, ptr),
-                        Instruction.Create(OpCodes.Ldloca, ptr),
-                        _il.Create(OpCodes.Call, Methods.Is64BitProcess),
-                        _il.Create(OpCodes.Brfalse, to32),
-                        to64,
-                        _il.Create(OpCodes.Br, calli),
-                        to32,
-                        calli,
-                    };
-
-                    var cur = _il.InsertAfter(p, instructions);
-                    _il.Remove(p);
-                    p = cur;
-                }
+                p = EmitBaseInvokeInstructions(instruction, interfaceTypeDef, p);
+                return p.Next;
             }
-            _il.Remove(instruction);
+
+            return null;
+        }
+
+        private Instruction EmitBaseInvokeInstructions(Instruction anchor, TypeDefinition interfaceTypeDef, Instruction invokeInstruction)
+        {
+            _il.Remove(anchor);
+            var methodRef = (MethodReference)invokeInstruction.Operand;
+            if (interfaceTypeDef.IsEqualTo(methodRef.DeclaringType))
+            {
+                invokeInstruction.OpCode = OpCodes.Call;
+                return invokeInstruction;
+            }
+
+            var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
+            var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
+            var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
+            var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, method).Build();
+
+            var to64 = _il.Create(OpCodes.Call, Methods.ToInt64);
+            var to32 = _il.Create(OpCodes.Call, Methods.ToInt32);
+            var calli = _il.Create(OpCodes.Calli, callSite);
+
+            var instructions = new List<Instruction>(4)
+            {
+                _il.Create(OpCodes.Ldtoken, method),
+                _il.Create(OpCodes.Stloc, handle),
+                _il.Create(OpCodes.Ldloca, handle),
+                _il.Create(OpCodes.Call, Methods.GetFunctionPointer),
+                _il.Create(OpCodes.Stloc, ptr),
+                _il.Create(OpCodes.Ldloca, ptr),
+                _il.Create(OpCodes.Call, Methods.Is64BitProcess),
+                _il.Create(OpCodes.Brfalse, to32),
+                to64,
+                _il.Create(OpCodes.Br, calli),
+                to32,
+                calli,
+            };
+
+            var cur = _il.InsertAfter(invokeInstruction, instructions);
+            _il.Remove(invokeInstruction);
+            return cur;
         }
 
         private static bool IsStloc(Instruction? instruction)

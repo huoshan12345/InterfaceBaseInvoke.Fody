@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     partial class InvokeOutsideTestCases
     {
         private class InheritIOverridedMethod : IOverridedMethod

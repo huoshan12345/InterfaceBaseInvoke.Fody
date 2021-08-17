@@ -44,6 +44,7 @@ namespace InterfaceBaseInvoke.Example
         {
             var service = new Service();
             service.Invoke();
+            Console.Read();
         }
     }
 }
