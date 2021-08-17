@@ -15,7 +15,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
     {
         private readonly ILProcessor _il;
         private readonly HashSet<Instruction> _referencedInstructions;
-        private readonly Dictionary<Instruction, int> _basicBlocks;
 
         public MethodDefinition Method { get; }
 
@@ -27,7 +26,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
             Locals = new MethodLocals(method);
             _il = method.Body.GetILProcessor();
             _referencedInstructions = GetAllReferencedInstructions();
-            _basicBlocks = SplitToBasicBlocks(method.Body.Instructions, _referencedInstructions);
         }
 
         public void Remove(Instruction instruction)
@@ -35,15 +33,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
             var newRef = instruction.Next ?? instruction.Previous ?? throw new InstructionWeavingException(instruction, "Cannot remove single instruction of method");
             _il.Remove(instruction);
             UpdateReferences(instruction, newRef);
-        }
-
-        public void Replace(Instruction oldInstruction, Instruction newInstruction, bool mapToBasicBlock = false)
-        {
-            _il.Replace(oldInstruction, newInstruction);
-            UpdateReferences(oldInstruction, newInstruction);
-
-            if (mapToBasicBlock)
-                _basicBlocks[newInstruction] = GetBasicBlock(oldInstruction);
         }
 
         public HashSet<Instruction> GetAllReferencedInstructions()
@@ -72,58 +61,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             return refs;
         }
-
-        private static Dictionary<Instruction, int> SplitToBasicBlocks(IEnumerable<Instruction> instructions, HashSet<Instruction> referencedInstructions)
-        {
-            var result = new Dictionary<Instruction, int>(ReferenceEqualityComparer<Instruction>.Instance);
-            var basicBlock = 1; // Reserve 0 for emitted instructions
-
-            foreach (var instruction in instructions)
-            {
-                if (referencedInstructions.Contains(instruction))
-                    ++basicBlock;
-
-                result[instruction] = basicBlock;
-
-                switch (instruction.OpCode.FlowControl)
-                {
-                    case FlowControl.Branch:
-                    case FlowControl.Cond_Branch:
-                    case FlowControl.Return:
-                    case FlowControl.Throw:
-                        ++basicBlock;
-                        break;
-
-                    case FlowControl.Call:
-                        if (instruction.OpCode == OpCodes.Jmp)
-                            ++basicBlock;
-                        break;
-                }
-            }
-
-            return result;
-        }
-
-        internal int GetBasicBlock(Instruction instruction)
-            => _basicBlocks.GetValueOrDefault(instruction);
-
-        public Instruction[] GetArgumentPushInstructionsInSameBasicBlock(Instruction instruction)
-        {
-            var result = instruction.GetArgumentPushInstructions();
-            var basicBlock = GetBasicBlock(instruction);
-
-            foreach (var argInstruction in result)
-                EnsureSameBasicBlock(argInstruction, basicBlock);
-
-            return result;
-        }
-
-        private void EnsureSameBasicBlock(Instruction instruction, int basicBlock)
-        {
-            if (GetBasicBlock(instruction) != basicBlock)
-                throw new InstructionWeavingException(instruction, "An unconditional expression was expected.");
-        }
-
+        
         private void UpdateReferences(Instruction oldInstruction, Instruction newInstruction)
         {
             if (!_referencedInstructions.Contains(oldInstruction))

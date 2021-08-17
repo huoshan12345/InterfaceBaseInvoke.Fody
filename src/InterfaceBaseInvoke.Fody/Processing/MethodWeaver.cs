@@ -183,9 +183,9 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 return invokeInstruction;
             }
 
+            var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
             var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
             var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
-            var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
             var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, method).Build();
 
             var to64 = _il.Create(OpCodes.Call, Methods.ToInt64);
