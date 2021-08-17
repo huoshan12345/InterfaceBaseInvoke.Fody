@@ -27,14 +27,14 @@ namespace InterfaceBaseInvoke.Tests
         public void OverridedMethod_Call()
         {
             string value = GetInstance().OverridedMethod_Call();
-            Assert.Equal("IDefaultMethod.Method.29.InheritIDefaultMethod.Call", value);
+            Assert.Equal("IOverridedMethod.Method.29.InheritIOverridedMethod.Call", value);
         }
 
         [Fact]
         public void OverridedMethod_MutipleCall()
         {
             string value = GetInstance().OverridedMethod_MutipleCall();
-            Assert.Equal("IDefaultMethod.Method.29.InheritIDefaultMethod.Call", value);
+            Assert.Equal("IOverridedMethod.Method.1.a----IOverridedMethod.Method.2.b", value);
         }
     }
 }
