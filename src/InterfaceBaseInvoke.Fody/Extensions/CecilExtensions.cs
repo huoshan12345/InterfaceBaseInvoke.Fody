@@ -179,9 +179,6 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             return clone;
         }
 
-        public static FieldReference Clone(this FieldReference field)
-            => new FieldReference(field.Name, field.FieldType, field.DeclaringType);
-
         public static MethodReference MakeGeneric(this MethodReference method, TypeReference declaringType)
         {
             if (!declaringType.IsGenericInstance || method.DeclaringType.IsGenericInstance)
@@ -196,46 +193,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             result.DeclaringType = genericDeclType;
             return result;
         }
-
-        public static Instruction? PrevSkipNops(this Instruction? instruction)
-        {
-            instruction = instruction?.Previous;
-
-            while (instruction != null && instruction.OpCode == OpCodes.Nop)
-                instruction = instruction.Previous;
-
-            return instruction;
-        }
-
-        public static Instruction PrevSkipNopsRequired(this Instruction instruction)
-            => instruction.PrevSkipNops() ?? throw new InstructionWeavingException(instruction, "The first instruction causes a stack underflow");
-
-        public static Instruction? SkipNops(this Instruction? instruction)
-        {
-            while (instruction != null && instruction.OpCode == OpCodes.Nop)
-                instruction = instruction.Next;
-
-            return instruction;
-        }
-
-        public static Instruction? NextSkipNops(this Instruction? instruction)
-            => instruction?.Next?.SkipNops();
-
-        public static Instruction GetValueConsumingInstruction(this Instruction instruction)
-        {
-            var stackSize = 0;
-
-            while (true)
-            {
-                stackSize += GetPushCount(instruction);
-                instruction = instruction.Next ?? throw new WeavingException("Unexpected end of method");
-                stackSize -= GetPopCount(instruction);
-
-                if (stackSize <= 0)
-                    return instruction;
-            }
-        }
-
+        
         public static Instruction[] GetArgumentPushInstructions(this Instruction instruction)
         {
             if (instruction.OpCode.FlowControl != FlowControl.Call)
@@ -385,26 +343,6 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             }
         }
 
-        public static bool IsStelem(this OpCode opCode)
-        {
-            switch (opCode.Code)
-            {
-                case Code.Stelem_Any:
-                case Code.Stelem_I:
-                case Code.Stelem_I1:
-                case Code.Stelem_I2:
-                case Code.Stelem_I4:
-                case Code.Stelem_I8:
-                case Code.Stelem_R4:
-                case Code.Stelem_R8:
-                case Code.Stelem_Ref:
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
         public static MethodCallingConvention ToMethodCallingConvention(this CallingConvention callingConvention)
         {
             return callingConvention switch
@@ -435,42 +373,6 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             if (handler.HandlerEnd != null)
                 yield return handler.HandlerEnd;
         }
-
-        public static IMetadataScope? GetCoreLibrary(this ModuleDefinition module)
-        {
-#pragma warning disable 618
-            return module.TypeSystem.CoreLibrary;
-#pragma warning restore 618
-        }
-
-        public static bool IsDebugBuild(this ModuleDefinition module)
-        {
-            const string attributeName = "System.Diagnostics.DebuggableAttribute";
-            const string enumName = attributeName + "/DebuggingModes";
-
-            var debuggableAttribute = module.Assembly.CustomAttributes.FirstOrDefault(i => i.AttributeType.FullName == attributeName)
-                                      ?? module.CustomAttributes.FirstOrDefault(i => i.AttributeType.FullName == attributeName);
-
-            if (debuggableAttribute == null)
-                return false;
-
-            var args = debuggableAttribute.ConstructorArguments;
-
-            switch (args.Count)
-            {
-                case 1 when args[0].Type.FullName == enumName && args[0].Value is int intValue:
-                    return ((DebuggableAttribute.DebuggingModes)intValue & DebuggableAttribute.DebuggingModes.DisableOptimizations) != 0;
-
-                case 2 when args[0].Value is bool && args[1].Value is bool isJitOptimizerDisabled:
-                    return isJitOptimizerDisabled;
-
-                default:
-                    return false;
-            }
-        }
-
-        public static bool IsInlineILAssembly([NotNullWhen(true)] this AssemblyNameReference? assembly)
-            => assembly?.Name == "InlineIL";
 
         public static SequencePoint? GetInputSequencePoint(this Instruction? instruction, MethodDefinition method)
         {

@@ -10,7 +10,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 {
     internal static partial class CecilExtensions
     {
-        public const string AssemblyName = "InterfaceBaseInvoke";
+        private const string AssemblyName = "InterfaceBaseInvoke";
 
         private static readonly ConcurrentDictionary<TypeReference, bool> _usageCache = new();
 
@@ -36,23 +36,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
                 };
             }
         }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this TypeDefinition? typeDef, ModuleDefinition module)
-        {
-            if (typeDef == null)
-                return false;
-
-            return typeDef.IsWeaverAssemblyReferenced(module)
-                   || typeDef.BaseType.IsWeaverAssemblyReferenced(module)
-                   || typeDef.HasInterfaces && typeDef.Interfaces.Any(i => i.IsWeaverAssemblyReferenced(module))
-                   || typeDef.HasGenericParameters && typeDef.GenericParameters.Any(i => i.IsWeaverAssemblyReferenced(module))
-                   || typeDef.HasCustomAttributes && typeDef.CustomAttributes.Any(i => i.IsWeaverAssemblyReferenced(module))
-                   || typeDef.HasMethods && typeDef.Methods.Any(i => i.IsWeaverAssemblyReferenced(module))
-                   || typeDef.HasFields && typeDef.Fields.Any(i => i.IsWeaverAssemblyReferenced(module))
-                   || typeDef.HasProperties && typeDef.Properties.Any(i => i.IsWeaverAssemblyReferenced(module))
-                   || typeDef.HasEvents && typeDef.Events.Any(i => i.IsWeaverAssemblyReferenced(module));
-        }
-
+ 
         public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this IMethodSignature? method, ModuleDefinition module)
         {
             if (method == null)
@@ -105,52 +89,8 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
             return false;
         }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this PropertyReference? propRef, ModuleDefinition module)
-        {
-            if (propRef == null)
-                return false;
 
-            if (propRef.PropertyType.IsWeaverAssemblyReferenced(module))
-                return true;
-
-            if (propRef is PropertyDefinition propDef)
-            {
-                if (propDef.HasCustomAttributes && propDef.CustomAttributes.Any(i => i.IsWeaverAssemblyReferenced(module)))
-                    return true;
-            }
-            else
-            {
-                if (propRef.DeclaringType.IsWeaverAssemblyReferenced(module))
-                    return true;
-            }
-
-            return false;
-        }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this EventReference? eventRef, ModuleDefinition module)
-        {
-            if (eventRef == null)
-                return false;
-
-            if (eventRef.EventType.IsWeaverAssemblyReferenced(module))
-                return true;
-
-            if (eventRef is EventDefinition eventDef)
-            {
-                if (eventDef.HasCustomAttributes && eventDef.CustomAttributes.Any(i => i.IsWeaverAssemblyReferenced(module)))
-                    return true;
-            }
-            else
-            {
-                if (eventRef.DeclaringType.IsWeaverAssemblyReferenced(module))
-                    return true;
-            }
-
-            return false;
-        }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this ParameterDefinition? paramDef, ModuleDefinition module)
+        private static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this ParameterDefinition? paramDef, ModuleDefinition module)
         {
             if (paramDef == null)
                 return false;
@@ -163,8 +103,8 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
             return false;
         }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this CustomAttribute? attr, ModuleDefinition module)
+
+        private static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this CustomAttribute? attr, ModuleDefinition module)
         {
             if (attr == null)
                 return false;
@@ -180,17 +120,8 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
             return false;
         }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this InterfaceImplementation? interfaceImpl, ModuleDefinition module)
-        {
-            if (interfaceImpl == null)
-                return false;
 
-            return interfaceImpl.InterfaceType.IsWeaverAssemblyReferenced(module)
-                   || interfaceImpl.HasCustomAttributes && interfaceImpl.CustomAttributes.Any(i => i.IsWeaverAssemblyReferenced(module));
-        }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this GenericParameterConstraint? constraint, ModuleDefinition module)
+        private static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this GenericParameterConstraint? constraint, ModuleDefinition module)
         {
             if (constraint == null)
                 return false;

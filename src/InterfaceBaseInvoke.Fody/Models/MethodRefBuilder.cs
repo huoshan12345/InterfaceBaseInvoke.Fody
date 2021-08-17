@@ -22,26 +22,12 @@ namespace InterfaceBaseInvoke.Fody.Models
             _method = _module.ImportReference(_module.ImportReference(method).MakeGeneric(typeRef));
         }
 
-        private MethodRefBuilder(ModuleDefinition module, MethodReference method)
-        {
-            _module = module;
-            _method = method;
-        }
-
         public static MethodRefBuilder MethodByName(ModuleDefinition module, TypeReference typeRef, string methodName)
             => new(module, typeRef, FindMethod(typeRef, methodName, null, null, null));
 
         public static MethodRefBuilder MethodByNameAndSignature(ModuleDefinition module, TypeReference typeRef, string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference> paramTypes)
             => new(module, typeRef, FindMethod(typeRef, methodName, genericArity, returnType, paramTypes ?? throw new ArgumentNullException(nameof(paramTypes))));
-
-        public static MethodRefBuilder MethodFromDelegateReference(ModuleDefinition module, MethodReference methodRef)
-        {
-            if (methodRef.Name.StartsWith("<", StringComparison.Ordinal))
-                throw new WeavingException("A compiler-generated method is referenced by the delegate");
-
-            return new MethodRefBuilder(module, methodRef);
-        }
-
+        
         private static MethodReference FindMethod(TypeReference typeRef, string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference>? paramTypes)
         {
             var typeDef = typeRef.ResolveRequiredType();
@@ -175,143 +161,6 @@ namespace InterfaceBaseInvoke.Fody.Models
                 1 => properties.Single(),
                 0 => throw new WeavingException($"Property '{propertyName}' not found in type {typeDef.FullName}"),
                 _ => throw new WeavingException($"Ambiguous property '{propertyName}' in type {typeDef.FullName}")
-            };
-        }
-
-        public static MethodRefBuilder EventAdd(ModuleDefinition module, TypeReference typeRef, string eventName)
-        {
-            var property = FindEvent(typeRef, eventName);
-
-            if (property.AddMethod == null)
-                throw new WeavingException($"Event '{eventName}' in type {typeRef.FullName} has no add method");
-
-            return new MethodRefBuilder(module, typeRef, property.AddMethod);
-        }
-
-        public static MethodRefBuilder EventRemove(ModuleDefinition module, TypeReference typeRef, string eventName)
-        {
-            var property = FindEvent(typeRef, eventName);
-
-            if (property.RemoveMethod == null)
-                throw new WeavingException($"Event '{eventName}' in type {typeRef.FullName} has no remove method");
-
-            return new MethodRefBuilder(module, typeRef, property.RemoveMethod);
-        }
-
-        public static MethodRefBuilder EventRaise(ModuleDefinition module, TypeReference typeRef, string eventName)
-        {
-            var property = FindEvent(typeRef, eventName);
-
-            if (property.InvokeMethod == null)
-                throw new WeavingException($"Event '{eventName}' in type {typeRef.FullName} has no raise method");
-
-            return new MethodRefBuilder(module, typeRef, property.InvokeMethod);
-        }
-
-        private static EventDefinition FindEvent(TypeReference typeRef, string eventName)
-        {
-            var typeDef = typeRef.ResolveRequiredType();
-
-            var events = typeDef.Events.Where(e => e.Name == eventName).ToList();
-
-            return events.Count switch
-            {
-                1 => events.Single(),
-                0 => throw new WeavingException($"Event '{eventName}' not found in type {typeDef.FullName}"),
-                _ => throw new WeavingException($"Ambiguous event '{eventName}' in type {typeDef.FullName}")
-            };
-        }
-
-        public static MethodRefBuilder Constructor(ModuleDefinition module, TypeReference typeRef, IReadOnlyList<TypeReference> paramTypes)
-        {
-            var typeDef = typeRef.ResolveRequiredType();
-
-            var constructors = typeDef.GetConstructors()
-                                      .Where(i => !i.IsStatic && i.Name == ".ctor" && SignatureMatches(i, paramTypes))
-                                      .ToList();
-
-            if (constructors.Count == 1)
-                return new MethodRefBuilder(module, typeRef, constructors.Single());
-
-            if (paramTypes.Count == 0)
-                throw new WeavingException($"Type {typeDef.FullName} has no default constructor");
-
-            throw new WeavingException($"Type {typeDef.FullName} has no constructor with signature ({string.Join(", ", paramTypes.Select(p => p.FullName))})");
-        }
-
-        public static MethodRefBuilder TypeInitializer(ModuleDefinition module, TypeReference typeRef)
-        {
-            var typeDef = typeRef.ResolveRequiredType();
-
-            var initializers = typeDef.GetConstructors()
-                                      .Where(i => i.IsStatic && i.Name == ".cctor" && i.Parameters.Count == 0)
-                                      .ToList();
-
-            if (initializers.Count == 1)
-                return new MethodRefBuilder(module, typeRef, initializers.Single());
-
-            throw new WeavingException($"Type {typeDef.FullName} has no type initializer");
-        }
-
-        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, UnaryOperator op)
-        {
-            var typeDef = typeRef.ResolveRequiredType();
-            var memberName = $"op_{op}";
-
-            var operators = typeDef.Methods
-                                   .Where(m => m.IsStatic && m.IsSpecialName && m.Name == memberName && m.Parameters.Count == 1)
-                                   .ToList();
-
-            return operators.Count switch
-            {
-                1 => new MethodRefBuilder(module, typeRef, operators.Single()),
-                0 => throw new WeavingException($"Unary operator {memberName} not found in type {typeDef.FullName}"),
-                _ => throw new WeavingException($"Ambiguous operator {memberName} in type {typeDef.FullName}")
-            };
-        }
-
-        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, BinaryOperator op, TypeReference leftOperandType, TypeReference rightOperandType)
-        {
-            var typeDef = typeRef.ResolveRequiredType();
-            var memberName = $"op_{op}";
-            var signature = new[] { leftOperandType, rightOperandType };
-
-            var operators = typeDef.Methods
-                                   .Where(m => m.IsStatic && m.IsSpecialName && m.Name == memberName && SignatureMatches(m, signature))
-                                   .ToList();
-
-            return operators.Count switch
-            {
-                1 => new MethodRefBuilder(module, typeRef, operators.Single()),
-                0 => throw new WeavingException($"Binary operator {memberName}({leftOperandType.FullName}, {rightOperandType.FullName}) not found in type {typeDef.FullName}"),
-                _ => throw new WeavingException($"Ambiguous operator {memberName} in type {typeDef.FullName}")
-            };
-        }
-
-        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, ConversionOperator op, ConversionDirection direction, TypeReference otherType)
-        {
-            var typeDef = typeRef.ResolveRequiredType();
-            var memberName = $"op_{op}";
-
-            var methods = typeDef.Methods.Where(m => m.IsStatic && m.IsSpecialName && m.Name == memberName && m.Parameters.Count == 1);
-
-            var operators = direction switch
-            {
-                ConversionDirection.From => methods.Where(m => m.Parameters[0].ParameterType.FullName == otherType.FullName).ToList(),
-                ConversionDirection.To   => methods.Where(m => m.ReturnType.FullName == otherType.FullName).ToList(),
-                _                        => throw new ArgumentOutOfRangeException(nameof(direction))
-            };
-
-            return operators.Count switch
-            {
-                1 => new MethodRefBuilder(module, typeRef, operators.Single()),
-                0 => direction switch
-                {
-                    ConversionDirection.From => throw new WeavingException($"Conversion operator {memberName} from {otherType.FullName} not found in type {typeDef.FullName}"),
-                    ConversionDirection.To   => throw new WeavingException($"Conversion operator {memberName} to {otherType.FullName} not found in type {typeDef.FullName}"),
-                    _                        => throw new ArgumentOutOfRangeException(nameof(direction))
-                },
-                _ => throw new WeavingException($"Ambiguous operator {memberName} in type {typeDef.FullName}")
             };
         }
 

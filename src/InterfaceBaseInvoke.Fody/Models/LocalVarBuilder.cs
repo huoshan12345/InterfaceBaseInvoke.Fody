@@ -5,7 +5,7 @@ using Mono.Cecil.Rocks;
 
 namespace InterfaceBaseInvoke.Fody.Models
 {
-    internal class LocalVarBuilder
+    internal sealed class LocalVarBuilder
     {
         private TypeReference _type;
 

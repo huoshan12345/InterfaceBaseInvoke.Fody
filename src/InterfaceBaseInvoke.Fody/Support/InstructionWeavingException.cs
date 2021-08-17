@@ -3,7 +3,7 @@ using Mono.Cecil.Cil;
 
 namespace InterfaceBaseInvoke.Fody.Support
 {
-    internal class InstructionWeavingException : WeavingException
+    internal sealed class InstructionWeavingException : WeavingException
     {
         public Instruction? Instruction { get; }
 

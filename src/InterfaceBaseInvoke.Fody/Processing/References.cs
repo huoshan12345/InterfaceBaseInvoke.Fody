@@ -7,7 +7,7 @@ using Mono.Cecil;
 
 namespace InterfaceBaseInvoke.Fody.Processing
 {
-    public class References
+    public sealed class References
     {
         public TypeReferences Types { get; }
         public MethodReferences Methods { get; }
@@ -19,7 +19,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
         }
     }
 
-    public class TypeReferences
+    public sealed class TypeReferences
     {
         public TypeReference RuntimeMethodHandle { get; }
         public TypeReference IntPtr { get; }
@@ -37,7 +37,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
         }
     }
 
-    public class MethodReferences
+    public sealed class MethodReferences
     {
         public MethodReference GetFunctionPointer { get; }
         public MethodReference ToInt32 { get; }

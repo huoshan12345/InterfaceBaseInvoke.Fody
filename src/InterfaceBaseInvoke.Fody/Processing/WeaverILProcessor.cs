@@ -11,7 +11,7 @@ using Mono.Cecil.Cil;
 
 namespace InterfaceBaseInvoke.Fody.Processing
 {
-    internal class WeaverILProcessor
+    internal sealed class WeaverILProcessor
     {
         private readonly ILProcessor _il;
         private readonly HashSet<Instruction> _referencedInstructions;
@@ -44,14 +44,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             if (mapToBasicBlock)
                 _basicBlocks[newInstruction] = GetBasicBlock(oldInstruction);
-        }
-
-        public void DeclareLocals(IEnumerable<LocalVarBuilder> locals)
-        {
-            foreach (var local in locals)
-            {
-                Locals.AddLocalVar(local);
-            }
         }
 
         public HashSet<Instruction> GetAllReferencedInstructions()
@@ -126,16 +118,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
             return result;
         }
 
-        public Instruction GetPrevSkipNopsInSameBasicBlock(Instruction instruction)
-        {
-            var prev = instruction.PrevSkipNopsRequired();
-            EnsureSameBasicBlock(prev, instruction);
-            return prev;
-        }
-
-        public void EnsureSameBasicBlock(Instruction checkedInstruction, Instruction referenceInstruction)
-            => EnsureSameBasicBlock(checkedInstruction, GetBasicBlock(referenceInstruction));
-
         private void EnsureSameBasicBlock(Instruction instruction, int basicBlock)
         {
             if (GetBasicBlock(instruction) != basicBlock)
@@ -189,48 +171,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             _referencedInstructions.Remove(oldInstruction);
             _referencedInstructions.Add(newInstruction);
-        }
-
-        public void RemoveNopsAround(Instruction? instruction)
-        {
-            RemoveNopsBefore(instruction);
-            RemoveNopsAfter(instruction);
-        }
-
-        private void RemoveNopsBefore(Instruction? instruction)
-        {
-            var currentInstruction = instruction?.Previous;
-            while (currentInstruction != null && currentInstruction.OpCode == OpCodes.Nop)
-            {
-                var prev = currentInstruction.Previous;
-                Remove(currentInstruction);
-                currentInstruction = prev;
-            }
-        }
-
-        public void RemoveNopsAfter(Instruction? instruction)
-        {
-            var currentInstruction = instruction?.Next;
-            while (currentInstruction != null && currentInstruction.OpCode == OpCodes.Nop)
-            {
-                var next = currentInstruction.Next;
-                Remove(currentInstruction);
-                currentInstruction = next;
-            }
-        }
-
-        public Instruction Create(OpCode opCode)
-        {
-            try
-            {
-                var instruction = _il.Create(opCode);
-                MethodLocals.MapMacroInstruction(Locals, instruction);
-                return instruction;
-            }
-            catch (ArgumentException)
-            {
-                throw ExceptionInvalidOperand(opCode);
-            }
         }
 
         public Instruction Create(OpCode opCode, TypeReference typeRef)
@@ -320,88 +260,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 throw ExceptionInvalidOperand(opCode);
             }
         }
-
-        public Instruction CreateConst(OpCode opCode, object operand)
-        {
-            try
-            {
-                switch (opCode.OperandType)
-                {
-                    case OperandType.InlineI:
-                        operand = Convert.ToInt32(operand, CultureInfo.InvariantCulture);
-                        break;
-
-                    case OperandType.InlineI8:
-                        operand = Convert.ToInt64(operand, CultureInfo.InvariantCulture);
-                        break;
-
-                    case OperandType.InlineR:
-                        operand = Convert.ToDouble(operand, CultureInfo.InvariantCulture);
-                        break;
-
-                    case OperandType.InlineVar:
-                    case OperandType.InlineArg:
-                        // It's an uint16 but Cecil expects int32
-                        operand = Convert.ToInt32(operand, CultureInfo.InvariantCulture);
-                        break;
-
-                    case OperandType.ShortInlineI:
-                        operand = opCode == OpCodes.Ldc_I4_S
-                            ? Convert.ToSByte(operand, CultureInfo.InvariantCulture)
-                            : Convert.ToByte(operand, CultureInfo.InvariantCulture);
-                        break;
-
-                    case OperandType.ShortInlineR:
-                        operand = Convert.ToSingle(operand, CultureInfo.InvariantCulture);
-                        break;
-
-                    case OperandType.ShortInlineVar:
-                    case OperandType.ShortInlineArg:
-                        operand = Convert.ToByte(operand, CultureInfo.InvariantCulture);
-                        break;
-                }
-
-                switch (operand)
-                {
-                    case int value:
-                    {
-                        if (MethodLocals.MapIndexInstruction(Locals, ref opCode, value, out var localVar))
-                            return Create(opCode, localVar);
-
-                        return _il.Create(opCode, value);
-                    }
-
-                    case byte value:
-                    {
-                        if (MethodLocals.MapIndexInstruction(Locals, ref opCode, value, out var localVar))
-                            return Create(opCode, localVar);
-
-                        return _il.Create(opCode, value);
-                    }
-
-                    case sbyte value:
-                        return _il.Create(opCode, value);
-                    case long value:
-                        return _il.Create(opCode, value);
-                    case double value:
-                        return _il.Create(opCode, value);
-                    case short value:
-                        return _il.Create(opCode, value);
-                    case float value:
-                        return _il.Create(opCode, value);
-                    case string value:
-                        return _il.Create(opCode, value);
-
-                    default:
-                        throw new WeavingException($"Unexpected operand for instruction {opCode}: {operand}");
-                }
-            }
-            catch (ArgumentException)
-            {
-                throw ExceptionInvalidOperand(opCode);
-            }
-        }
-
+        
         private static WeavingException ExceptionInvalidOperand(OpCode opCode)
         {
             switch (opCode.OperandType)
@@ -452,8 +311,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
                     return ExpectedOperand(opCode.OperandType.ToString());
             }
 
-            WeavingException ExpectedOperand(string expected)
-                => new WeavingException($"Opcode {opCode} expects an operand of type {expected}");
+            WeavingException ExpectedOperand(string expected) => new($"Opcode {opCode} expects an operand of type {expected}");
         }
 
         public Instruction InsertAfter(Instruction target, Instruction instruction)

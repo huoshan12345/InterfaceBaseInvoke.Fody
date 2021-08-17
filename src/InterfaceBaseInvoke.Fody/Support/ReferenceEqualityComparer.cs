@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace InterfaceBaseInvoke.Fody.Support
 {
-    internal class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+    internal sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
         where T : class
     {
         public static ReferenceEqualityComparer<T> Instance { get; } = new();

@@ -8,7 +8,7 @@ using InterfaceBaseInvoke.Fody.Support;
 
 namespace InterfaceBaseInvoke.Fody
 {
-    public class ModuleWeaver : BaseModuleWeaver
+    public sealed class ModuleWeaver : BaseModuleWeaver
     {
         private readonly Logger _log;
 

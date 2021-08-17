@@ -14,7 +14,7 @@ using Mono.Collections.Generic;
 
 namespace InterfaceBaseInvoke.Fody.Processing
 {
-    internal class MethodWeaver
+    internal sealed class MethodWeaver
     {
         private const string AnchorMethodDeclaringTypeName = "InterfaceBaseInvoke.ObjectExtension";
         private const string AnchorMethodName = "Base";
