@@ -19,11 +19,12 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         public MethodDefinition Method { get; }
 
-        public MethodLocals? Locals { get; private set; }
+        public MethodLocals Locals { get; }
 
         public WeaverILProcessor(MethodDefinition method)
         {
             Method = method;
+            Locals = new MethodLocals(method);
             _il = method.Body.GetILProcessor();
             _referencedInstructions = GetAllReferencedInstructions();
             _basicBlocks = SplitToBasicBlocks(method.Body.Instructions, _referencedInstructions);
@@ -36,29 +37,21 @@ namespace InterfaceBaseInvoke.Fody.Processing
             UpdateReferences(instruction, newRef);
         }
 
-        public Instruction InsertAfter(Instruction target, Instruction instruction)
-        {
-            _il.InsertAfter(target, instruction);
-            return instruction;
-        }
-
-        public Instruction Replace(Instruction oldInstruction, Instruction newInstruction, bool mapToBasicBlock = false)
+        public void Replace(Instruction oldInstruction, Instruction newInstruction, bool mapToBasicBlock = false)
         {
             _il.Replace(oldInstruction, newInstruction);
             UpdateReferences(oldInstruction, newInstruction);
 
             if (mapToBasicBlock)
                 _basicBlocks[newInstruction] = GetBasicBlock(oldInstruction);
-
-            return newInstruction;
         }
 
         public void DeclareLocals(IEnumerable<LocalVarBuilder> locals)
         {
-            if (Locals != null)
-                throw new WeavingException("Local variables have already been declared for this method");
-
-            Locals = new MethodLocals(_il.Body.Method, locals);
+            foreach (var local in locals)
+            {
+                Locals.AddLocalVar(local);
+            }
         }
 
         public HashSet<Instruction> GetAllReferencedInstructions()
@@ -461,6 +454,17 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             WeavingException ExpectedOperand(string expected)
                 => new WeavingException($"Opcode {opCode} expects an operand of type {expected}");
+        }
+
+        public Instruction InsertAfter(Instruction target, Instruction instruction)
+        {
+            _il.InsertAfter(target, instruction);
+            return instruction;
+        }
+
+        public Instruction InsertAfter(Instruction target, IEnumerable<Instruction> instructions)
+        {
+            return instructions.Aggregate(target, (current, ins) => InsertAfter(current, ins));
         }
     }
 }

@@ -76,7 +76,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
         public static TypeReference ToTypeReference(this Type type, ModuleDefinition module)
         {
-            return new(type.Namespace, type.Name, module, module.GetCoreLibrary());
+            return new TypeRefBuilder(module, type.Assembly.GetName().Name, type.FullName ?? type.Name).Build();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace InterfaceBaseInvoke.Fody.Models
         public static MethodRefBuilder MethodByName(ModuleDefinition module, TypeReference typeRef, string methodName)
             => new(module, typeRef, FindMethod(typeRef, methodName, null, null, null));
 
-        public static MethodRefBuilder MethodByNameAndSignature(ModuleDefinition module, TypeReference typeRef, string methodName, int? genericArity, TypeRefBuilder? returnType, IReadOnlyList<TypeRefBuilder> paramTypes)
+        public static MethodRefBuilder MethodByNameAndSignature(ModuleDefinition module, TypeReference typeRef, string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference> paramTypes)
             => new(module, typeRef, FindMethod(typeRef, methodName, genericArity, returnType, paramTypes ?? throw new ArgumentNullException(nameof(paramTypes))));
 
         public static MethodRefBuilder MethodFromDelegateReference(ModuleDefinition module, MethodReference methodRef)
@@ -42,7 +42,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             return new MethodRefBuilder(module, methodRef);
         }
 
-        private static MethodReference FindMethod(TypeReference typeRef, string methodName, int? genericArity, TypeRefBuilder? returnType, IReadOnlyList<TypeRefBuilder>? paramTypes)
+        private static MethodReference FindMethod(TypeReference typeRef, string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference>? paramTypes)
         {
             var typeDef = typeRef.ResolveRequiredType();
 
@@ -56,7 +56,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             }
 
             if (returnType != null)
-                methods = methods.Where(m => m.ReturnType.FullName == returnType.TryBuild(m)?.FullName);
+                methods = methods.Where(m => m.ReturnType.FullName == returnType.FullName);
 
             if (paramTypes != null)
                 methods = methods.Where(m => SignatureMatches(m, paramTypes));
@@ -71,14 +71,14 @@ namespace InterfaceBaseInvoke.Fody.Models
             };
         }
 
-        private static bool SignatureMatches(MethodReference method, IReadOnlyList<TypeRefBuilder> paramTypes)
+        private static bool SignatureMatches(MethodReference method, IReadOnlyList<TypeReference> paramTypes)
         {
             if (method.Parameters.Count != paramTypes.Count)
                 return false;
 
             for (var i = 0; i < paramTypes.Count; ++i)
             {
-                var paramType = paramTypes[i].TryBuild(method);
+                var paramType = paramTypes[i];
                 if (paramType == null)
                     return false;
 
@@ -89,7 +89,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             return true;
         }
 
-        private static string GetDisplaySignature(string methodName, int? genericArity, TypeRefBuilder? returnType, IReadOnlyList<TypeRefBuilder>? paramTypes)
+        private static string GetDisplaySignature(string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference>? paramTypes)
         {
             if (genericArity is null && returnType is null && paramTypes is null)
                 return "'" + methodName + "'";
@@ -97,7 +97,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             var sb = new StringBuilder();
 
             if (returnType != null)
-                sb.Append(returnType.GetDisplayName()).Append(' ');
+                sb.Append(returnType.FullName).Append(' ');
 
             sb.Append(methodName);
 
@@ -135,7 +135,7 @@ namespace InterfaceBaseInvoke.Fody.Models
                     if (i != 0)
                         sb.Append(", ");
 
-                    sb.Append(paramTypes[i].GetDisplayName());
+                    sb.Append(paramTypes[i].FullName);
                 }
 
                 sb.Append(')');
@@ -222,7 +222,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             };
         }
 
-        public static MethodRefBuilder Constructor(ModuleDefinition module, TypeReference typeRef, IReadOnlyList<TypeRefBuilder> paramTypes)
+        public static MethodRefBuilder Constructor(ModuleDefinition module, TypeReference typeRef, IReadOnlyList<TypeReference> paramTypes)
         {
             var typeDef = typeRef.ResolveRequiredType();
 
@@ -236,7 +236,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             if (paramTypes.Count == 0)
                 throw new WeavingException($"Type {typeDef.FullName} has no default constructor");
 
-            throw new WeavingException($"Type {typeDef.FullName} has no constructor with signature ({string.Join(", ", paramTypes.Select(p => p.GetDisplayName()))})");
+            throw new WeavingException($"Type {typeDef.FullName} has no constructor with signature ({string.Join(", ", paramTypes.Select(p => p.FullName))})");
         }
 
         public static MethodRefBuilder TypeInitializer(ModuleDefinition module, TypeReference typeRef)
@@ -270,7 +270,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             };
         }
 
-        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, BinaryOperator op, TypeRefBuilder leftOperandType, TypeRefBuilder rightOperandType)
+        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, BinaryOperator op, TypeReference leftOperandType, TypeReference rightOperandType)
         {
             var typeDef = typeRef.ResolveRequiredType();
             var memberName = $"op_{op}";
@@ -283,12 +283,12 @@ namespace InterfaceBaseInvoke.Fody.Models
             return operators.Count switch
             {
                 1 => new MethodRefBuilder(module, typeRef, operators.Single()),
-                0 => throw new WeavingException($"Binary operator {memberName}({leftOperandType.GetDisplayName()}, {rightOperandType.GetDisplayName()}) not found in type {typeDef.FullName}"),
+                0 => throw new WeavingException($"Binary operator {memberName}({leftOperandType.FullName}, {rightOperandType.FullName}) not found in type {typeDef.FullName}"),
                 _ => throw new WeavingException($"Ambiguous operator {memberName} in type {typeDef.FullName}")
             };
         }
 
-        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, ConversionOperator op, ConversionDirection direction, TypeRefBuilder otherType)
+        public static MethodRefBuilder Operator(ModuleDefinition module, TypeReference typeRef, ConversionOperator op, ConversionDirection direction, TypeReference otherType)
         {
             var typeDef = typeRef.ResolveRequiredType();
             var memberName = $"op_{op}";
@@ -297,8 +297,8 @@ namespace InterfaceBaseInvoke.Fody.Models
 
             var operators = direction switch
             {
-                ConversionDirection.From => methods.Where(m => m.Parameters[0].ParameterType.FullName == otherType.TryBuild(m)?.FullName).ToList(),
-                ConversionDirection.To   => methods.Where(m => m.ReturnType.FullName == otherType.TryBuild(m)?.FullName).ToList(),
+                ConversionDirection.From => methods.Where(m => m.Parameters[0].ParameterType.FullName == otherType.FullName).ToList(),
+                ConversionDirection.To   => methods.Where(m => m.ReturnType.FullName == otherType.FullName).ToList(),
                 _                        => throw new ArgumentOutOfRangeException(nameof(direction))
             };
 
@@ -307,8 +307,8 @@ namespace InterfaceBaseInvoke.Fody.Models
                 1 => new MethodRefBuilder(module, typeRef, operators.Single()),
                 0 => direction switch
                 {
-                    ConversionDirection.From => throw new WeavingException($"Conversion operator {memberName} from {otherType.GetDisplayName()} not found in type {typeDef.FullName}"),
-                    ConversionDirection.To   => throw new WeavingException($"Conversion operator {memberName} to {otherType.GetDisplayName()} not found in type {typeDef.FullName}"),
+                    ConversionDirection.From => throw new WeavingException($"Conversion operator {memberName} from {otherType.FullName} not found in type {typeDef.FullName}"),
+                    ConversionDirection.To   => throw new WeavingException($"Conversion operator {memberName} to {otherType.FullName} not found in type {typeDef.FullName}"),
                     _                        => throw new ArgumentOutOfRangeException(nameof(direction))
                 },
                 _ => throw new WeavingException($"Ambiguous operator {memberName} in type {typeDef.FullName}")

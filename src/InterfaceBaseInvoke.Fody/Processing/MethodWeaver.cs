@@ -24,7 +24,11 @@ namespace InterfaceBaseInvoke.Fody.Processing
         private readonly MethodWeaverLogger _log;
         private readonly WeaverILProcessor _il;
         private readonly TypeReference _runtimeMethodHandle;
+        private readonly TypeReference _ptr;
+        private readonly TypeReference _int;
         private readonly MethodReference _getMethodPtr;
+        private readonly MethodReference _ptrToInt32;
+        private readonly MethodReference _ptrToInt64;
         private Collection<Instruction> Instructions => _method.Body.Instructions;
 
         public MethodWeaver(ModuleDefinition module, MethodDefinition method, ILogger log)
@@ -34,7 +38,11 @@ namespace InterfaceBaseInvoke.Fody.Processing
             _il = new WeaverILProcessor(method);
             _log = new MethodWeaverLogger(log, _method);
             _runtimeMethodHandle = typeof(RuntimeMethodHandle).ToTypeReference(module);
-            _getMethodPtr = MethodRefBuilder.PropertyGet(module, _runtimeMethodHandle, nameof(RuntimeMethodHandle.Value)).Build();
+            _ptr = typeof(IntPtr).ToTypeReference(module);
+            _int = typeof(int).ToTypeReference(module);
+            _getMethodPtr = MethodRefBuilder.MethodByNameAndSignature(module, _runtimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, _ptr, Array.Empty<TypeReference>()).Build();
+            _ptrToInt32 = MethodRefBuilder.MethodByName(module, _ptr, nameof(IntPtr.ToInt32)).Build();
+            _ptrToInt64 = MethodRefBuilder.MethodByName(module, _ptr, nameof(IntPtr.ToInt64)).Build();
         }
 
         public static bool NeedsProcessing(ModuleDefinition module, MethodDefinition method)
@@ -174,30 +182,23 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 }
                 else
                 {
+                    var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(_runtimeMethodHandle));
+                    var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(_ptr));
                     var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
+                    var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, method).Build();
                     var instructions = new List<Instruction>(4)
                     {
                         _il.Create(OpCodes.Ldtoken, method),
-                        _il.Create(OpCodes.Castclass, _runtimeMethodHandle),
+                        Instruction.Create(OpCodes.Stloc, handle),
+                        Instruction.Create(OpCodes.Ldloca, handle),
                         _il.Create(OpCodes.Call, _getMethodPtr),
+                        Instruction.Create(OpCodes.Stloc, ptr),
+                        Instruction.Create(OpCodes.Ldloca, ptr),
+                        _il.Create(OpCodes.Call, _ptrToInt64),
+                        _il.Create(OpCodes.Calli, callSite)
                     };
-                    if (Environment.Is64BitProcess)
-                    {
-                        instructions.Add(_il.Create(OpCodes.Conv_I8));
-                    }
-                    else
-                    {
-                        instructions.Add(_il.Create(OpCodes.Conv_I4));
-                    }
 
-                    var sig = new StandAloneMethodSigBuilder(CallingConventions.Standard, method).Build();
-                    instructions.Add(_il.Create(OpCodes.Calli, sig));
-
-                    var cur = p;
-                    foreach (var ins in instructions)
-                    {
-                        cur = _il.InsertAfter(cur, ins);
-                    }
+                    var cur = _il.InsertAfter(p, instructions);
                     _il.Remove(p);
                     p = cur;
                 }

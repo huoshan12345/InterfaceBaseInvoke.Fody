@@ -12,26 +12,33 @@ namespace InterfaceBaseInvoke.Fody.Processing
     {
         private readonly Dictionary<string, VariableDefinition> _localsByName = new();
         private readonly List<VariableDefinition> _localsByIndex = new();
+        private readonly MethodDefinition _method;
 
-        public MethodLocals(MethodDefinition method, IEnumerable<LocalVarBuilder> locals)
+        public MethodLocals(MethodDefinition method)
         {
-            foreach (var local in locals)
+            _method = method;
+            foreach (var variable in _method.Body.Variables)
             {
-                var localVar = local.Build();
-
-                if (local.Name != null)
-                {
-                    if (_localsByName.ContainsKey(local.Name))
-                        throw new WeavingException($"Local {local.Name} is already defined");
-
-                    _localsByName.Add(local.Name, localVar);
-                }
-
-                _localsByIndex.Add(localVar);
-                method.Body.Variables.Add(localVar);
-
-                method.DebugInformation.Scope?.Variables.Add(new VariableDebugInformation(localVar, local.Name ?? $"InlineIL_{_localsByIndex.Count - 1}"));
+                _localsByIndex.Add(variable);
+                _localsByName.Add(variable.ToString(), variable);
             }
+        }
+
+        public VariableDefinition AddLocalVar(LocalVarBuilder local)
+        {
+            var localVar = local.Build();
+            _method.Body.Variables.Add(localVar);
+            var name = local.Name ?? localVar.ToString();
+
+            _method.DebugInformation.Scope?.Variables.Add(new VariableDebugInformation(localVar, name));
+
+            if (_localsByName.ContainsKey(name))
+                throw new WeavingException($"Local {local.Name} is already defined");
+
+            _localsByName.Add(name, localVar);
+            _localsByIndex.Add(localVar);
+
+            return localVar;
         }
 
         public VariableDefinition? TryGetByName(string name)

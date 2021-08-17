@@ -34,9 +34,6 @@ namespace InterfaceBaseInvoke.Example
 
         public void Invoke()
         {
-            var method = typeof(Service).GetMethod(nameof(Service.Method))!;
-            var ptr = method.MethodHandle.Value;
-
             Console.WriteLine("Start invoking...");
             this.Base<IService1>().Method();
             this.Base<IService2>().Method();

@@ -22,8 +22,7 @@ namespace InterfaceBaseInvoke.Fody.Models
             Name = name;
         }
 
-        public VariableDefinition Build()
-            => new VariableDefinition(_type);
+        public VariableDefinition Build() => new(_type);
 
         public void MakePinned()
         {
