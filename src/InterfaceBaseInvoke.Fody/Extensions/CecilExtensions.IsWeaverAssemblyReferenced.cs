@@ -14,7 +14,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
         private static readonly ConcurrentDictionary<TypeReference, bool> _usageCache = new();
 
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this TypeReference? type, ModuleDefinition module)
+        public static bool IsWeaverAssemblyReferenced(this TypeReference? type, ModuleDefinition module)
         {
             if (type == null)
                 return false;
@@ -28,16 +28,16 @@ namespace InterfaceBaseInvoke.Fody.Extensions
                     GenericInstanceType t => t.ElementType.IsWeaverAssemblyReferenced(module)
                                              || t.GenericParameters.Any(i => i.IsWeaverAssemblyReferenced(module))
                                              || t.GenericArguments.Any(i => i.IsWeaverAssemblyReferenced(module)),
-                    GenericParameter t    => t.HasConstraints && t.Constraints.Any(c => c.IsWeaverAssemblyReferenced(module))
+                    GenericParameter t => t.HasConstraints && t.Constraints.Any(c => c.IsWeaverAssemblyReferenced(module))
                                              || t.HasCustomAttributes && t.CustomAttributes.Any(i => i.IsWeaverAssemblyReferenced(module)),
-                    IModifierType t       => t.ElementType.IsWeaverAssemblyReferenced(module) || t.ModifierType.IsWeaverAssemblyReferenced(module),
+                    IModifierType t => t.ElementType.IsWeaverAssemblyReferenced(module) || t.ModifierType.IsWeaverAssemblyReferenced(module),
                     FunctionPointerType t => ((IMethodSignature)t).IsWeaverAssemblyReferenced(module),
-                    _                     => typeRef.Scope?.MetadataScopeType == MetadataScopeType.AssemblyNameReference && typeRef.Scope.Name == AssemblyName
+                    _ => typeRef.Scope?.MetadataScopeType == MetadataScopeType.AssemblyNameReference && typeRef.Scope.Name == AssemblyName
                 };
             }
         }
- 
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this IMethodSignature? method, ModuleDefinition module)
+
+        public static bool IsWeaverAssemblyReferenced(this IMethodSignature? method, ModuleDefinition module)
         {
             if (method == null)
                 return false;
@@ -67,8 +67,8 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
             return false;
         }
-        
-        public static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this FieldReference? fieldRef, ModuleDefinition module)
+
+        public static bool IsWeaverAssemblyReferenced(this FieldReference? fieldRef, ModuleDefinition module)
         {
             if (fieldRef == null)
                 return false;
@@ -90,7 +90,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             return false;
         }
 
-        private static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this ParameterDefinition? paramDef, ModuleDefinition module)
+        private static bool IsWeaverAssemblyReferenced(this ParameterDefinition? paramDef, ModuleDefinition module)
         {
             if (paramDef == null)
                 return false;
@@ -104,7 +104,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             return false;
         }
 
-        private static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this CustomAttribute? attr, ModuleDefinition module)
+        private static bool IsWeaverAssemblyReferenced(this CustomAttribute? attr, ModuleDefinition module)
         {
             if (attr == null)
                 return false;
@@ -121,7 +121,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             return false;
         }
 
-        private static bool IsWeaverAssemblyReferenced([NotNullWhen(true)] this GenericParameterConstraint? constraint, ModuleDefinition module)
+        private static bool IsWeaverAssemblyReferenced(this GenericParameterConstraint? constraint, ModuleDefinition module)
         {
             if (constraint == null)
                 return false;

@@ -147,16 +147,24 @@ namespace InterfaceBaseInvoke.Fody.Processing
             if (!interfaceTypeDef.IsInterface)
                 throw new InstructionWeavingException(instruction, "The method Base<T> requires that T is an interface type, but got " + interfaceTypeDef.FullName);
 
-            if (IsStloc(instruction.Next))
-                throw new InstructionWeavingException(instruction, "The interface methods to be base-invoked requires that they are called fluently after Base<T>.");
+            var next = instruction.Next;
+            if (next == null)
+                throw NoInterfaceMethodInvocationException();
 
-            for (var p = instruction.Next; p != null; p = p.Next)
+            if (IsStloc(next))
+                throw NoInterfaceMethodInvocationException();
+
+            if (IsCallAndPop(next) && !IsInterfaceMethodCandidate(next, interfaceTypeDef))
             {
-                if (p.OpCode != OpCodes.Callvirt
-                    || p.Operand is not MethodReference methodRef)
-                    continue;
+                if (IsAnchorMethodCall(next))
+                    throw new InvalidOperationException("The method Base<T> cannot be invoked followed by another Base<T>");
+                else
+                    throw NoInterfaceMethodInvocationException();
+            }
 
-                if (!interfaceTypeDef.IsAssignableTo(methodRef.DeclaringType))
+            for (var p = next; p != null; p = p.Next)
+            {
+                if (!IsInterfaceMethodCandidate(p, interfaceTypeDef))
                     continue;
 
                 var graph = Instructions.BuildGraph();
@@ -170,31 +178,31 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 return p.Next;
             }
 
-            return null;
+            throw NoInterfaceMethodInvocationException();
         }
 
         private Instruction EmitBaseInvokeInstructions(Instruction anchor, TypeDefinition interfaceTypeDef, Instruction invokeInstruction)
         {
             var methodRef = (MethodReference)invokeInstruction.Operand;
-            var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
-
-            if (method.IsAbstract)
-            {
-                throw new InstructionWeavingException(anchor, "The abstract interface methods cannot be invoked.");
-            }
 
             _il.Remove(anchor);
 
             if (interfaceTypeDef.IsEqualTo(methodRef.DeclaringType))
             {
+                var method = methodRef.Resolve();
+                EnsureNonAbstract(method);
+
                 invokeInstruction.OpCode = OpCodes.Call;
                 return invokeInstruction;
             }
 
+            var interfaceDefaultMethod = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
+            EnsureNonAbstract(interfaceDefaultMethod);
+
             // use Calli instead of Call to avoid MethodAccessException
             var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
             var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
-            var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, method).Build();
+            var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, interfaceDefaultMethod).Build();
 
             var to64 = _il.Create(OpCodes.Call, Methods.ToInt64);
             var to32 = _il.Create(OpCodes.Call, Methods.ToInt32);
@@ -202,7 +210,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             var instructions = new List<Instruction>(4)
             {
-                _il.Create(OpCodes.Ldtoken, method),
+                _il.Create(OpCodes.Ldtoken, interfaceDefaultMethod),
                 _il.Create(OpCodes.Stloc, handle),
                 _il.Create(OpCodes.Ldloca, handle),
                 _il.Create(OpCodes.Call, Methods.GetFunctionPointer),
@@ -222,9 +230,23 @@ namespace InterfaceBaseInvoke.Fody.Processing
             return cur;
         }
 
-        private static bool IsStloc(Instruction? instruction)
+        private static bool IsInterfaceMethodCandidate(Instruction instruction, TypeDefinition typeDef)
         {
-            switch (instruction?.OpCode.Code)
+            if (instruction.OpCode != OpCodes.Callvirt
+                || instruction.Operand is not MethodReference methodRef)
+                return false;
+
+            return typeDef.IsAssignableTo(methodRef.DeclaringType);
+        }
+
+        private static bool IsCallAndPop(Instruction instruction)
+        {
+            return instruction.OpCode.FlowControl == FlowControl.Call && instruction.GetPopCount() > 0;
+        }
+
+        private static bool IsStloc(Instruction instruction)
+        {
+            switch (instruction.OpCode.Code)
             {
                 case Code.Stloc:
                 case Code.Stloc_S:
@@ -236,6 +258,17 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 default:
                     return false;
             }
+        }
+
+        private static Exception NoInterfaceMethodInvocationException()
+        {
+            return new InvalidOperationException("The method Base<T> requires that an interface methods to be base-invoked with its return value fluently");
+        }
+
+        private static void EnsureNonAbstract(MethodDefinition method)
+        {
+            if (method.IsAbstract)
+                throw new InvalidOperationException($"The abstract interface method {method.FullName} cannot be invoked");
         }
     }
 }

@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <DisableFody>true</DisableFody>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\InterfaceBaseInvoke.Tests.AssemblyToProcess\**\*.cs"
-             Exclude="..\InterfaceBaseInvoke.Tests.AssemblyToProcess\obj\**;..\InterfaceBaseInvoke.Tests.AssemblyToProcess\AssemblyToProcessReference.cs"
+    <Compile Include="..\InterfaceBaseInvoke.Tests.AssemblyToProcess\~TestTypes\*.cs"
              Link="AssemblyToProcess\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 

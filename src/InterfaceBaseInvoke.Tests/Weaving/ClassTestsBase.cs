@@ -2,6 +2,7 @@
 using Fody;
 using InterfaceBaseInvoke.Fody;
 using InterfaceBaseInvoke.Tests.AssemblyToProcess;
+using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
 using InterfaceBaseInvoke.Tests.Support;
 
 namespace InterfaceBaseInvoke.Tests.Weaving
@@ -9,8 +10,7 @@ namespace InterfaceBaseInvoke.Tests.Weaving
     public abstract class ClassTestsBase
     {
         protected static readonly string VerifiableAssembly = typeof(AssemblyToProcessReference).Assembly.GetName().Name!;
-        protected const string UnverifiableAssembly = "InterfaceBaseInvoke.Tests.UnverifiableAssemblyToProcess";
-        protected const string InvalidAssembly = "InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess";
+        protected static readonly string InvalidAssembly = typeof(InvalidAssemblyToProcessReference).Assembly.GetName().Name!;
 
         protected virtual bool NetStandard => false;
         protected abstract string ClassName { get; }
@@ -21,5 +21,8 @@ namespace InterfaceBaseInvoke.Tests.Weaving
                 ? StandardAssemblyToProcessFixture.TestResult.GetInstance($"{VerifiableAssembly}.{ClassName}")
                 : AssemblyToProcessFixture.TestResult.GetInstance($"{VerifiableAssembly}.{ClassName}");
         }
+
+        protected string ShouldHaveError(string methodName)
+            => InvalidAssemblyToProcessFixture.ShouldHaveError($"{InvalidAssembly}.{ClassName}", methodName, true);
     }
 }

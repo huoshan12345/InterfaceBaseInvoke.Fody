@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
@@ -8,10 +9,7 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
     {
         private class InheritIDefaultMethod : IDefaultMethod
         {
-            public string Method(int x, string y)
-            {
-                throw new InvalidOperationException();
-            }
+            public string Method(int x, string y) => throw new InvalidOperationException();
         }
 
         public string DefaultMethod_Call()

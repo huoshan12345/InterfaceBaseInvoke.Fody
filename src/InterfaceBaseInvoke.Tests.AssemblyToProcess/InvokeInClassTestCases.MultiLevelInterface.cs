@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
