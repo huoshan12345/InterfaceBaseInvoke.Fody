@@ -1,13 +1,11 @@
-﻿using System;
-using System.Reflection;
-using InterfaceBaseInvoke.Tests.AssemblyToProcess;
+﻿using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 using Xunit;
 
-namespace InterfaceBaseInvoke.Tests
+namespace InterfaceBaseInvoke.Tests.Weaving
 {
     public class InvokeInClassTests : ClassTestsBase
     {
-        protected override string ClassName { get; } = typeof(InvokeInClassTestCases).FullName!;
+        protected override string ClassName => nameof(InvokeInClassTestCases);
 
         [Fact]
         public void DefaultMethod_Call()
@@ -36,5 +34,10 @@ namespace InterfaceBaseInvoke.Tests
             string value = GetInstance().OverridedMethod_MutipleCall();
             Assert.Equal("IOverridedMethod.Method.1.a----IOverridedMethod.Method.2.b", value);
         }
+    }
+
+    public class InvokeInClassTestsStandard : InvokeInClassTests
+    {
+        protected override bool NetStandard => true;
     }
 }

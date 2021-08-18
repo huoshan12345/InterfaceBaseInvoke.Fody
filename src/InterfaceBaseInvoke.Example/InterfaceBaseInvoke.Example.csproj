@@ -11,10 +11,4 @@
     <WeaverFiles Include="$(SolutionDir)InterfaceBaseInvoke.Fody\bin\$(Configuration)\netstandard2.0\InterfaceBaseInvoke.Fody.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="FodyWeavers.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

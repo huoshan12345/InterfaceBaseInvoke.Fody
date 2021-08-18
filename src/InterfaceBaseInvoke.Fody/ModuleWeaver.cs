@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using InterfaceBaseInvoke.Fody.Support;
+using Mono.Cecil.Cil;
 
 namespace InterfaceBaseInvoke.Fody
 {
-    public sealed class ModuleWeaver : BaseModuleWeaver
+    public class ModuleWeaver : BaseModuleWeaver
     {
         private readonly Logger _log;
 
@@ -33,12 +34,15 @@ namespace InterfaceBaseInvoke.Fody
                     }
                     catch (WeavingException ex)
                     {
-                        WriteError(ex.Message, ex.SequencePoint);
+                        AddError(ex.Message, ex.SequencePoint);
                     }
                 }
             }
         }
 
         public override IEnumerable<string> GetAssembliesForScanning() => Enumerable.Empty<string>();
+
+        protected virtual void AddError(string message, SequencePoint? sequencePoint)
+            => _log.Error(message, sequencePoint);
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using InterfaceBaseInvoke.Fody.Models;
+using InterfaceBaseInvoke.Fody.Support;
 using Mono.Cecil;
 
 namespace InterfaceBaseInvoke.Fody.Extensions
@@ -21,9 +22,26 @@ namespace InterfaceBaseInvoke.Fody.Extensions
         public static Expression<TDelegate> Lambda<TDelegate>(this Expression e, params ParameterExpression[] parameters) where TDelegate : Delegate
             => Expression.Lambda<TDelegate>(e, parameters);
 
+        public static void RemoveWhere<T>(this IList<T> list, Func<T, bool> predicate)
+        {
+            for (var i = list.Count - 1; i >= 0; --i)
+            {
+                if (predicate(list[i]))
+                    list.RemoveAt(i);
+            }
+        }
+
         public static TypeReference ToTypeReference(this Type type, ModuleDefinition module)
         {
-            return new TypeRefBuilder(module, type.Assembly.GetName().Name, type.FullName ?? type.Name).Build();
+            var name = type.Assembly.GetName().Name;
+            if (name == TypeHelper.CoreLibAssemblyName)
+            {
+                // The reference System.Private.CoreLib is added by Fody.
+                // Failed to execute weaver due to a failure to load it.
+                // The recommended work around is to avoid using it inside a weaver.
+                name = TypeHelper.RuntimeAssemblyName;
+            }
+            return new TypeRefBuilder(module, name, type.FullName ?? type.Name).Build();
         }
 
         /// <summary>

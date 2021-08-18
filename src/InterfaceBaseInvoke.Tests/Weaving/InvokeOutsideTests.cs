@@ -1,11 +1,11 @@
 ﻿using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 using Xunit;
 
-namespace InterfaceBaseInvoke.Tests
+namespace InterfaceBaseInvoke.Tests.Weaving
 {
     public class InvokeOutsideTests : ClassTestsBase
     {
-        protected override string ClassName { get; } = typeof(InvokeOutsideTestCases).FullName!;
+        protected override string ClassName => nameof(InvokeOutsideTestCases);
 
         [Fact]
         public void DefaultMethod_Call()
@@ -48,5 +48,10 @@ namespace InterfaceBaseInvoke.Tests
             string value = GetInstance().OverridedMethod_Call_JumpInInvocation();
             Assert.Equal("----IOverridedMethod.Method.11.aa----", value);
         }
+    }
+
+    public class InvokeOutsideTestsStandard : InvokeOutsideTests
+    {
+        protected override bool NetStandard => true;
     }
 }

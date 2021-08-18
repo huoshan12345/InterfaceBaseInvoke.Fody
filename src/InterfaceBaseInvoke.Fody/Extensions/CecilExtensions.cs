@@ -359,7 +359,7 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
         public static GraphNode<int> BuildGraph(this IList<Instruction> instructions)
         {
-            // Failed to execute weaver {weaver.Config.AssemblyPath} due to a failure to load ValueTuple.
+            // Failed to execute weaver due to a failure to load ValueTuple.
             // This is a known issue with in dotnet(https://github.com/dotnet/runtime/issues/27533).
             // The recommended work around is to avoid using ValueTuple inside a weaver.
             var dic = instructions.Select((m, i) => Tuple.Create(m, i)).ToDictionary(x => x.Item1, x => x.Item2);

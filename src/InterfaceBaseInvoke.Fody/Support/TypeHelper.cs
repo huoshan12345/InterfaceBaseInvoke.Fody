@@ -20,5 +20,8 @@ namespace InterfaceBaseInvoke.Fody.Support
                 _ => methods[0]
             };
         }
+
+        public const string CoreLibAssemblyName = "System.Private.CoreLib";
+        public const string RuntimeAssemblyName = "System.Runtime";
     }
 }
