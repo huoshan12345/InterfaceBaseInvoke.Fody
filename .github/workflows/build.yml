@@ -39,4 +39,4 @@ jobs:
         shell: pwsh
         run: |
           $path = [IO.Path]::Combine(".", "output", "*.nupkg")
-          dotnet nuget push $path -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols
+          dotnet nuget push $path -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols true
