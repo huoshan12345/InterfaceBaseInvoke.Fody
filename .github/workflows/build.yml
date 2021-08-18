@@ -37,4 +37,4 @@ jobs:
 
       - name: Publish NuGet
         shell: pwsh
-        run: dotnet nuget push .\output\.nupkg --skip-duplicate --no-symbols -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} 
+        run: dotnet nuget push .\output\*.nupkg --skip-duplicate --no-symbols -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} 
