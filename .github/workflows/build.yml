@@ -37,4 +37,6 @@ jobs:
 
       - name: Publish NuGet
         shell: pwsh
-        run: dotnet nuget push .\output\*.nupkg --skip-duplicate --no-symbols -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} 
+        run: |
+          $path = [IO.Path]::Combine(".", "output", "*.nupkg")
+          dotnet nuget push $path -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols
