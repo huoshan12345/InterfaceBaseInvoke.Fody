@@ -1,4 +1,5 @@
-﻿using InterfaceBaseInvoke.Tests.AssemblyToProcess;
+﻿using System.Diagnostics.CodeAnalysis;
+using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 using Xunit;
 
 namespace InterfaceBaseInvoke.Tests.Weaving

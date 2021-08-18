@@ -158,7 +158,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
                 if (!interfaceTypeDef.IsAssignableTo(methodRef.DeclaringType))
                     continue;
-                
+
                 var graph = Instructions.BuildGraph();
                 var args = p.GetArgumentPushInstructions(Instructions, graph);
                 var arg = args.First();
@@ -175,15 +175,23 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         private Instruction EmitBaseInvokeInstructions(Instruction anchor, TypeDefinition interfaceTypeDef, Instruction invokeInstruction)
         {
-            _il.Remove(anchor);
             var methodRef = (MethodReference)invokeInstruction.Operand;
+            var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
+
+            if (method.IsAbstract)
+            {
+                throw new InstructionWeavingException(anchor, "The abstract interface methods cannot be invoked.");
+            }
+
+            _il.Remove(anchor);
+
             if (interfaceTypeDef.IsEqualTo(methodRef.DeclaringType))
             {
                 invokeInstruction.OpCode = OpCodes.Call;
                 return invokeInstruction;
             }
 
-            var method = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
+            // use Calli instead of Call to avoid MethodAccessException
             var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
             var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
             var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, method).Build();
