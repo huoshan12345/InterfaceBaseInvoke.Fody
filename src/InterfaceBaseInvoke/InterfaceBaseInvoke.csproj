@@ -8,6 +8,7 @@
     <IsPackable>true</IsPackable>
     <DebugType>embedded</DebugType>
     <PackageId>InterfaceBaseInvoke.Fody</PackageId>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)).</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
