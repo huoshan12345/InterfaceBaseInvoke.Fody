@@ -35,9 +35,5 @@ jobs:
       - name: NuGet Pack
         run: dotnet pack --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.Pack.sln
 
-      - name: Upload NuGet
-        uses: actions/upload-artifact@v2
-        with:
-          name: NuGet
-          path: output/*.nupkg
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn` 
+      - name: Publish NuGet
+        run: dotnet nuget push output/*.nupkg --skip-duplicate --no-symbols true -k ${{ secrets.NUGET_API_KEY }}
