@@ -27,16 +27,6 @@ namespace InterfaceBaseInvoke.Fody.Models
             _callSite.Parameters.AddRange(paramTypes.Select(t => new ParameterDefinition(t)));
         }
 
-        public StandAloneMethodSigBuilder(CallingConvention callingConvention, TypeReference returnType, IEnumerable<TypeReference> paramTypes)
-        {
-            _callSite = new CallSite(returnType)
-            {
-                CallingConvention = callingConvention.ToMethodCallingConvention()
-            };
-
-            _callSite.Parameters.AddRange(paramTypes.Select(t => new ParameterDefinition(t)));
-        }
-
         public StandAloneMethodSigBuilder(CallingConventions callingConvention, MethodReference method)
             : this(callingConvention, method.ReturnType, method.Parameters.Select(m => m.ParameterType))
         {

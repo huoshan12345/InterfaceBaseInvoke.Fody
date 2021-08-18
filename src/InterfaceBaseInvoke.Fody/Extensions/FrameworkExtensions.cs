@@ -10,10 +10,6 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 {
     internal static class FrameworkExtensions
     {
-        public static TValue? GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-            where TKey : notnull
-            => dictionary.TryGetValue(key, out var value) ? value : default;
-
         public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
             foreach (var item in items)

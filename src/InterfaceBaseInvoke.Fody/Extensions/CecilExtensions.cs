@@ -196,66 +196,6 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             return result;
         }
 
-        public static Instruction[] GetArgumentPushInstructions(this Instruction instruction)
-        {
-            if (instruction.OpCode.FlowControl != FlowControl.Call)
-                throw new InstructionWeavingException(instruction, "Expected a call instruction");
-
-            var method = (IMethodSignature)instruction.Operand;
-            var argCount = GetArgCount(instruction.OpCode, method);
-
-            if (argCount == 0)
-                return Array.Empty<Instruction>();
-
-            var result = new Instruction[argCount];
-            var currentInstruction = instruction.Previous;
-
-            for (var paramIndex = result.Length - 1; paramIndex >= 0; --paramIndex)
-                result[paramIndex] = BackwardScanPush(ref currentInstruction);
-
-            return result;
-        }
-
-        private static Instruction BackwardScanPush(ref Instruction currentInstruction)
-        {
-            var startInstruction = currentInstruction;
-            Instruction? result = null;
-            var stackToConsume = 1;
-
-            while (stackToConsume > 0)
-            {
-                switch (currentInstruction.OpCode.FlowControl)
-                {
-                    case FlowControl.Branch:
-                    case FlowControl.Cond_Branch:
-                    case FlowControl.Return:
-                    case FlowControl.Throw:
-                        throw new InstructionWeavingException(startInstruction, $"Could not locate call argument due to {currentInstruction}");
-
-                    case FlowControl.Call:
-                        if (currentInstruction.OpCode == OpCodes.Jmp)
-                            throw new InstructionWeavingException(startInstruction, $"Could not locate call argument due to {currentInstruction}");
-                        break;
-                }
-
-                var popCount = GetPopCount(currentInstruction);
-                var pushCount = GetPushCount(currentInstruction);
-
-                stackToConsume -= pushCount;
-
-                if (stackToConsume == 0 && result == null)
-                    result = currentInstruction;
-
-                if (stackToConsume < 0)
-                    throw new InstructionWeavingException(startInstruction, $"Could not locate call argument due to {currentInstruction} which pops an unexpected number of items from the stack");
-
-                stackToConsume += popCount;
-                currentInstruction = currentInstruction.Previous;
-            }
-
-            return result ?? throw new InstructionWeavingException(startInstruction, "Could not locate call argument, reached beginning of method");
-        }
-
         private static int GetArgCount(OpCode opCode, IMethodSignature method)
         {
             var argCount = method.Parameters.Count;
@@ -347,19 +287,6 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             }
         }
 
-        public static MethodCallingConvention ToMethodCallingConvention(this CallingConvention callingConvention)
-        {
-            return callingConvention switch
-            {
-                CallingConvention.Cdecl => MethodCallingConvention.C,
-                CallingConvention.StdCall => MethodCallingConvention.StdCall,
-                CallingConvention.Winapi => MethodCallingConvention.StdCall,
-                CallingConvention.FastCall => MethodCallingConvention.FastCall,
-                CallingConvention.ThisCall => MethodCallingConvention.ThisCall,
-                _ => throw new WeavingException("Invalid calling convention")
-            };
-        }
-
         public static IEnumerable<Instruction> GetInstructions(this ExceptionHandler handler)
         {
             if (handler.TryStart != null)
@@ -432,7 +359,10 @@ namespace InterfaceBaseInvoke.Fody.Extensions
 
         public static GraphNode<int> BuildGraph(this IList<Instruction> instructions)
         {
-            var dic = instructions.Select((m, i) => (m, i)).ToDictionary(x => x.m, x => x.i);
+            // Failed to execute weaver {weaver.Config.AssemblyPath} due to a failure to load ValueTuple.
+            // This is a known issue with in dotnet(https://github.com/dotnet/runtime/issues/27533).
+            // The recommended work around is to avoid using ValueTuple inside a weaver.
+            var dic = instructions.Select((m, i) => Tuple.Create(m, i)).ToDictionary(x => x.Item1, x => x.Item2);
             var root = new GraphNode<int>(0);
             var queue = new Queue<GraphNode<int>>();
             queue.Enqueue(root);
