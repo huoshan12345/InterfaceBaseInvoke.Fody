@@ -8,7 +8,7 @@ namespace InterfaceBaseInvoke.Tests.Weaving
     {
         protected override string ClassName => nameof(InvokeMethodFluentllyTestCases);
 
-        [Fact]
+        [InvalidAssemblyOnlyDebugFact]
         public void InvokeMethod_WithVariable()
         {
             var error = ShouldHaveError(nameof(InvokeMethodFluentllyTestCases.InvokeMethod_WithVariable));

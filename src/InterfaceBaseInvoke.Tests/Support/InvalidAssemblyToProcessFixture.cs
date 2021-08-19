@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 using Fody;
 using InterfaceBaseInvoke.Fody;
 using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
@@ -11,6 +12,8 @@ namespace InterfaceBaseInvoke.Tests.Support
         public static TestResult TestResult { get; }
 
         public static ModuleDefinition ResultModule { get; }
+
+        public static bool IsDebug { get; }
 
         static InvalidAssemblyToProcessFixture()
         {
@@ -27,6 +30,14 @@ namespace InterfaceBaseInvoke.Tests.Support
             {
                 AssemblyResolver = assemblyResolver
             });
+
+            var typeName = TestResult.Assembly.GetName().Name + "." + nameof(InvalidAssemblyToProcessReference);
+            IsDebug = (bool)TestResult.Assembly.GetType(typeName, true)!
+                                      .InvokeMember(name: nameof(IsDebug),
+                                                    invokeAttr: BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Static,
+                                                    binder: null,
+                                                    target: null,
+                                                    args: null)!;
         }
 
         public static string ShouldHaveError(string className, string methodName, bool sequencePointRequired)
@@ -39,12 +50,6 @@ namespace InterfaceBaseInvoke.Tests.Support
                 errorMessage!.SequencePoint.ShouldNotBeNull();
 
             return errorMessage!.Text;
-        }
-
-        public static void ShouldHaveErrorInType(string className, string nestedTypeName)
-        {
-            var expectedMessagePart = $" {className}/{nestedTypeName}";
-            TestResult.Errors.ShouldAny(err => err.Text.Contains(expectedMessagePart));
         }
     }
 }
