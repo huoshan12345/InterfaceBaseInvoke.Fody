@@ -32,7 +32,7 @@ jobs:
         run: dotnet test -c Debug --no-build ${{ env.SLN_PATH }}
 
       - name: Test Release
-        run: dotnet test -c Release --no-build ${{ env.SLN_PATH }}        
+        run: dotnet test -c Release --no-build ${{ env.SLN_PATH }}
 
       - name: NuGet Publish
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -41,3 +41,11 @@ jobs:
           $path = [IO.Path]::Combine($dir, "*.nupkg")
           dotnet pack -o $dir -c Release ${{ env.SLN_PATH }} -p:PackageVersion=${{ env.VERSION }} --no-restore
           dotnet nuget push $path -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols true
+
+      - name: Create Tag
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
