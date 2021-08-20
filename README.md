@@ -39,14 +39,12 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
 See [Fody usage](https://github.com/Fody/Home/blob/master/pages/usage.md) for general guidelines, and [Fody Configuration](https://github.com/Fody/Home/blob/master/pages/configuration.md) for additional options.
 
 ## Usage
----
 Call the extension method `Base<T>` to cast an object to one of its interfaces, and then call a method or a property.  
 Just like: 
 - `var result = this.Base<Interface>().Method(1, "test");`
 - `var value = this.Base<Interface>().Property`
 
 ## Simple example
----
 ```
 public interface IService
 {
