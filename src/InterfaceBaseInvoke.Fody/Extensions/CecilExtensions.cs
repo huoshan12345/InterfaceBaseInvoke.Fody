@@ -317,38 +317,40 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             return sequencePoints.LastOrDefault(sp => sp.Offset <= instruction.Offset);
         }
 
-        private static readonly Func<TypeReference, TypeReference, bool> _typeRefEqualFunc = CreateTypeRefEqualFunc();
-
-        private static Func<TypeReference, TypeReference, bool> CreateTypeRefEqualFunc()
-        {
-            var assembly = typeof(TypeReference).Assembly;
-            var method = TypeHelper.GetMethod(assembly, "Mono.Cecil.TypeReferenceEqualityComparer", "AreEqual", true, true);
-            var paras = new[]
-            {
-                Expression.Parameter(typeof(TypeReference)),
-                Expression.Parameter(typeof(TypeReference)),
-            };
-            var args = paras.Append(Expression.Constant(0).Convert(assembly.GetType("Mono.Cecil.TypeComparisonMode")));
-            var call = Expression.Call(method, args);
-            return call.Lambda<Func<TypeReference, TypeReference, bool>>(paras).Compile();
-        }
-
         public static bool IsEqualTo(this TypeReference a, TypeReference b)
         {
-            return _typeRefEqualFunc(a, b);
+            return TypeHelper.TypeRefEqualFunc(a, b);
         }
 
-        public static bool IsAssignableTo(this TypeDefinition derivedTypeDef, TypeReference baseTypeRef)
+        public static bool IsEqualTo(this MethodReference a, MethodReference b)
         {
-            if (derivedTypeDef.IsEqualTo(baseTypeRef))
-                return true;
+            return TypeHelper.MethodRefEqualFunc(a, b);
+        }
 
-            return derivedTypeDef.Interfaces.Any(m => m.InterfaceType.IsEqualTo(baseTypeRef));
+        public static GenericInstanceMethod MakeGenericMethod(this MethodReference self, IEnumerable<TypeReference> args)
+        {
+            if (!self.HasGenericParameters)
+                throw new WeavingException($"Not a generic method: {self.FullName}");
+
+            var arguments = args.ToArray();
+
+            if (arguments.Length == 0)
+                throw new WeavingException("No generic arguments supplied");
+
+            if (self.GenericParameters.Count != arguments.Length)
+                throw new ArgumentException($"Incorrect number of generic arguments supplied for method {self.FullName} - expected {self.GenericParameters.Count}, but got {arguments.Length}");
+
+            var instance = new GenericInstanceMethod(self);
+            foreach (var argument in arguments)
+                instance.GenericArguments.Add(argument);
+
+            return instance;
         }
 
         public static MethodDefinition GetInterfaceDefaultMethod(this TypeDefinition typeDef, MethodReference methodRef)
         {
-            var methods = typeDef.Methods.Where(m => m.Overrides.Any(x => x.FullName == methodRef.FullName)).ToList();
+            var elementMethod = methodRef.GetElementMethod();
+            var methods = typeDef.Methods.Where(m => m.Overrides.Any(x => x.IsEqualTo(elementMethod))).ToList();
             return methods.Count switch
             {
                 0 => throw new MissingMethodException(methodRef.Name),

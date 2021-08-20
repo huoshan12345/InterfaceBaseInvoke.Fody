@@ -11,15 +11,11 @@ namespace InterfaceBaseInvoke.Fody.Models
 {
     internal class MethodRefBuilder
     {
-        private readonly ModuleDefinition _module;
-        private MethodReference _method;
+        private readonly MethodReference _method;
 
         private MethodRefBuilder(ModuleDefinition module, TypeReference typeRef, MethodReference method)
         {
-            _module = module;
-
-            method = method.MapToScope(typeRef.Scope, module);
-            _method = _module.ImportReference(_module.ImportReference(method).MakeGeneric(typeRef));
+            _method = module.ImportReference(module.ImportReference(method.MapToScope(typeRef.Scope, module)).MakeGeneric(typeRef));
         }
 
         public static MethodRefBuilder MethodByName(ModuleDefinition module, TypeReference typeRef, string methodName)
@@ -27,7 +23,7 @@ namespace InterfaceBaseInvoke.Fody.Models
 
         public static MethodRefBuilder MethodByNameAndSignature(ModuleDefinition module, TypeReference typeRef, string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference> paramTypes)
             => new(module, typeRef, FindMethod(typeRef, methodName, genericArity, returnType, paramTypes ?? throw new ArgumentNullException(nameof(paramTypes))));
-        
+
         private static MethodReference FindMethod(TypeReference typeRef, string methodName, int? genericArity, TypeReference? returnType, IReadOnlyList<TypeReference>? paramTypes)
         {
             var typeDef = typeRef.ResolveRequiredType();
@@ -140,16 +136,6 @@ namespace InterfaceBaseInvoke.Fody.Models
             return new MethodRefBuilder(module, typeRef, property.GetMethod);
         }
 
-        public static MethodRefBuilder PropertySet(ModuleDefinition module, TypeReference typeRef, string propertyName)
-        {
-            var property = FindProperty(typeRef, propertyName);
-
-            if (property.SetMethod == null)
-                throw new WeavingException($"Property '{propertyName}' in type {typeRef.FullName} has no setter");
-
-            return new MethodRefBuilder(module, typeRef, property.SetMethod);
-        }
-
         private static PropertyDefinition FindProperty(TypeReference typeRef, string propertyName)
         {
             var typeDef = typeRef.ResolveRequiredType();
@@ -166,49 +152,6 @@ namespace InterfaceBaseInvoke.Fody.Models
 
         public MethodReference Build()
             => _method;
-
-        public void MakeGenericMethod(TypeReference[] genericArgs)
-        {
-            if (!_method.HasGenericParameters)
-                throw new WeavingException($"Not a generic method: {_method.FullName}");
-
-            if (genericArgs.Length == 0)
-                throw new WeavingException("No generic arguments supplied");
-
-            if (_method.GenericParameters.Count != genericArgs.Length)
-                throw new WeavingException($"Incorrect number of generic arguments supplied for method {_method.FullName} - expected {_method.GenericParameters.Count}, but got {genericArgs.Length}");
-
-            var genericInstance = new GenericInstanceMethod(_method);
-            genericInstance.GenericArguments.AddRange(genericArgs);
-
-            _method = _module.ImportReference(genericInstance);
-        }
-
-        public void SetOptionalParameters(TypeReference[] optionalParamTypes)
-        {
-            if (_method.CallingConvention != MethodCallingConvention.VarArg)
-                throw new WeavingException($"Not a vararg method: {_method.FullName}");
-
-            if (_method.Parameters.Any(p => p.ParameterType.IsSentinel))
-                throw new WeavingException("Optional parameters for vararg call have already been supplied");
-
-            if (optionalParamTypes.Length == 0)
-                throw new WeavingException("No optional parameter type supplied for vararg method call");
-
-            var methodRef = _method.Clone();
-            methodRef.CallingConvention = MethodCallingConvention.VarArg;
-
-            for (var i = 0; i < optionalParamTypes.Length; ++i)
-            {
-                var paramType = optionalParamTypes[i];
-                if (i == 0)
-                    paramType = paramType.MakeSentinelType();
-
-                methodRef.Parameters.Add(new ParameterDefinition(paramType));
-            }
-
-            _method = _module.ImportReference(methodRef);
-        }
 
         public override string ToString() => _method.ToString();
     }

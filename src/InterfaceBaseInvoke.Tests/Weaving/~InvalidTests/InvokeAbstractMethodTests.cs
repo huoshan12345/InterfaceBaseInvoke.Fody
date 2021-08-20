@@ -14,19 +14,19 @@ namespace InterfaceBaseInvoke.Tests.Weaving
         protected override string ClassName => nameof(InvokeAbstractMethodTestCases);
 
         [Fact]
-        public void EmptyMethod_Call()
+        public void EmptyMethod_Invoke()
         {
-            var error = ShouldHaveError(nameof(InvokeAbstractMethodTestCases.EmptyMethod_Call));
-            error.ShouldContain("IEmptyMethod::Method");
+            var error = ShouldHaveError(nameof(InvokeAbstractMethodTestCases.EmptyMethod_Invoke));
+            error.ShouldContain("IHasEmptyMethod::Method");
             error.ShouldContain("The abstract interface method");
             error.ShouldContain("cannot be invoked");
         }
 
         [Fact]
-        public void EmptyMethod_Call_MultiLevel()
+        public void EmptyMethod_Invoke_MultiLevel()
         {
-            var error = ShouldHaveError(nameof(InvokeAbstractMethodTestCases.EmptyMethod_Call_MultiLevel));
-            error.ShouldContain("IEmptyMethod::Method");
+            var error = ShouldHaveError(nameof(InvokeAbstractMethodTestCases.EmptyMethod_Invoke_MultiLevel));
+            error.ShouldContain("IHasEmptyMethod::Method");
             error.ShouldContain("The abstract interface method");
             error.ShouldContain("cannot be invoked");
         }

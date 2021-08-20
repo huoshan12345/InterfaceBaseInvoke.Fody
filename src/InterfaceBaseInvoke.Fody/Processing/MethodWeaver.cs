@@ -142,8 +142,8 @@ namespace InterfaceBaseInvoke.Fody.Processing
         private Instruction? ProcessAnchorMethod(Instruction instruction)
         {
             var anchorMethod = (GenericInstanceMethod)instruction.Operand;
-            var interfaceType = anchorMethod.GenericArguments.First();
-            var interfaceTypeDef = interfaceType.Resolve();
+            var interfaceTypeRef = anchorMethod.GenericArguments.First();
+            var interfaceTypeDef = interfaceTypeRef.Resolve();
             if (!interfaceTypeDef.IsInterface)
                 throw new InstructionWeavingException(instruction, "The method Base<T> requires that T is an interface type, but got " + interfaceTypeDef.FullName);
 
@@ -154,7 +154,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
             if (IsStloc(next))
                 throw NoInterfaceMethodInvocationException();
 
-            if (IsCallAndPop(next) && !IsInterfaceMethodCandidate(next, interfaceTypeDef))
+            if (IsCallAndPop(next) && !IsInterfaceMethodCandidate(next, interfaceTypeRef, interfaceTypeDef))
             {
                 if (IsAnchorMethodCall(next))
                     throw new InvalidOperationException("The method Base<T> cannot be invoked followed by another Base<T>");
@@ -164,8 +164,13 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             for (var p = next; p != null; p = p.Next)
             {
-                if (!IsInterfaceMethodCandidate(p, interfaceTypeDef))
+                if (!IsInterfaceMethodCandidate(p, interfaceTypeRef, interfaceTypeDef))
                     continue;
+
+                if (_method.FullName.Contains("OverridedGenericMethodTestCases::GenericMethod_Invoke"))
+                {
+
+                }
 
                 var graph = Instructions.BuildGraph();
                 var args = p.GetArgumentPushInstructions(Instructions, graph);
@@ -174,23 +179,23 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 if (arg != instruction)
                     continue;
 
-                p = EmitBaseInvokeInstructions(instruction, interfaceTypeDef, p);
+                p = EmitBaseInvokeInstructions(instruction, interfaceTypeRef, interfaceTypeDef, p);
                 return p.Next;
             }
 
             throw NoInterfaceMethodInvocationException();
         }
 
-        private Instruction EmitBaseInvokeInstructions(Instruction anchor, TypeDefinition interfaceTypeDef, Instruction invokeInstruction)
+        private Instruction EmitBaseInvokeInstructions(Instruction anchor, TypeReference typeRef, TypeDefinition interfaceTypeDef, Instruction invokeInstruction)
         {
-            var methodRef = (MethodReference)invokeInstruction.Operand;
-
             _il.Remove(anchor);
 
-            if (interfaceTypeDef.IsEqualTo(methodRef.DeclaringType))
+            var methodRef = (MethodReference)invokeInstruction.Operand;
+
+            if (typeRef.IsEqualTo(methodRef.DeclaringType))
             {
-                var method = methodRef.Resolve();
-                EnsureNonAbstract(method);
+                var methodDef = methodRef.Resolve();
+                EnsureNonAbstract(methodDef);
 
                 invokeInstruction.OpCode = OpCodes.Call;
                 return invokeInstruction;
@@ -199,10 +204,16 @@ namespace InterfaceBaseInvoke.Fody.Processing
             var interfaceDefaultMethod = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
             EnsureNonAbstract(interfaceDefaultMethod);
 
+            var interfaceDefaultMethodRef = (MethodReference)interfaceDefaultMethod;
+            if (methodRef is GenericInstanceMethod { HasGenericArguments: true } genericInstanceMethod)
+            {
+                interfaceDefaultMethodRef = interfaceDefaultMethod.MakeGenericMethod(genericInstanceMethod.GenericArguments);
+            }
+
             // use Calli instead of Call to avoid MethodAccessException
             var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
             var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
-            var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, interfaceDefaultMethod).Build();
+            var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, interfaceDefaultMethodRef).Build();
 
             var to64 = _il.Create(OpCodes.Call, Methods.ToInt64);
             var to32 = _il.Create(OpCodes.Call, Methods.ToInt32);
@@ -210,7 +221,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
             var instructions = new List<Instruction>(4)
             {
-                _il.Create(OpCodes.Ldtoken, interfaceDefaultMethod),
+                _il.Create(OpCodes.Ldtoken, interfaceDefaultMethodRef),
                 _il.Create(OpCodes.Stloc, handle),
                 _il.Create(OpCodes.Ldloca, handle),
                 _il.Create(OpCodes.Call, Methods.GetFunctionPointer),
@@ -230,13 +241,17 @@ namespace InterfaceBaseInvoke.Fody.Processing
             return cur;
         }
 
-        private static bool IsInterfaceMethodCandidate(Instruction instruction, TypeDefinition typeDef)
+        private static bool IsInterfaceMethodCandidate(Instruction instruction, TypeReference typeRef, TypeDefinition typeDef)
         {
             if (instruction.OpCode != OpCodes.Callvirt
                 || instruction.Operand is not MethodReference methodRef)
                 return false;
 
-            return typeDef.IsAssignableTo(methodRef.DeclaringType);
+            var baseTypeRef = methodRef.DeclaringType;
+            if (typeRef.IsEqualTo(baseTypeRef))
+                return true;
+
+            return typeDef.Interfaces.Any(m => m.InterfaceType.IsEqualTo(baseTypeRef));
         }
 
         private static bool IsCallAndPop(Instruction instruction)

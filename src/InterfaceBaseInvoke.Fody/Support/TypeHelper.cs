@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Mono.Cecil;
+using InterfaceBaseInvoke.Fody.Extensions;
 
 namespace InterfaceBaseInvoke.Fody.Support
 {
@@ -23,5 +26,37 @@ namespace InterfaceBaseInvoke.Fody.Support
 
         public const string CoreLibAssemblyName = "System.Private.CoreLib";
         public const string RuntimeAssemblyName = "System.Runtime";
+
+
+        public static Func<TypeReference, TypeReference, bool> TypeRefEqualFunc { get; } = CreateTypeRefEqualFunc();
+
+        private static Func<TypeReference, TypeReference, bool> CreateTypeRefEqualFunc()
+        {
+            var assembly = typeof(TypeReference).Assembly;
+            var method = GetMethod(assembly, "Mono.Cecil.TypeReferenceEqualityComparer", "AreEqual", true, true);
+            var paras = new[]
+            {
+                Expression.Parameter(typeof(TypeReference)),
+                Expression.Parameter(typeof(TypeReference)),
+            };
+            var args = paras.Append(Expression.Constant(0).Convert(assembly.GetType("Mono.Cecil.TypeComparisonMode")));
+            var call = Expression.Call(method, args);
+            return call.Lambda<Func<TypeReference, TypeReference, bool>>(paras).Compile();
+        }
+
+        public static Func<MethodReference, MethodReference, bool> MethodRefEqualFunc { get; } = CreateMethodRefEqualFunc();
+
+        private static Func<MethodReference, MethodReference, bool> CreateMethodRefEqualFunc()
+        {
+            var assembly = typeof(TypeReference).Assembly;
+            var method = GetMethod(assembly, "Mono.Cecil.MethodReferenceComparer", "AreEqual", true, true);
+            var paras = new[]
+            {
+                Expression.Parameter(typeof(MethodReference)),
+                Expression.Parameter(typeof(MethodReference)),
+            };
+            var call = Expression.Call(method, paras.AsEnumerable());
+            return call.Lambda<Func<MethodReference, MethodReference, bool>>(paras).Compile();
+        }
     }
 }

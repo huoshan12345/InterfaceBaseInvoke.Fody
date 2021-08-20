@@ -2,6 +2,7 @@
 
 [![Build](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/workflows/Build/badge.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/actions?query=workflow%3ABuild)
 [![NuGet package](https://img.shields.io/nuget/v/InterfaceBaseInvoke.Fody.svg?logo=NuGet)](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody)
+[![.net](https://img.shields.io/badge/.net%20-5.0-ff69b4.svg?)](https://www.microsoft.com/net/download)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/master/LICENSE)  
 ![Icon](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/raw/master/icon.png)
 
