@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceBaseInvoke.Example
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceBaseInvoke.Tests.StandardAssemblyToProcess", "InterfaceBaseInvoke.Tests.StandardAssemblyToProcess\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess.csproj", "{4D4F5599-CE46-4BD6-8880-4F715DAEF05A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess", "InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess\InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess.csproj", "{B8DC8D53-588F-4451-A676-23127D07ED20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess", "InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess\InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess.csproj", "{B8DC8D53-588F-4451-A676-23127D07ED20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

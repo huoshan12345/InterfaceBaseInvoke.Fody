@@ -5,8 +5,8 @@ env:
   DOTNET_NOLOGO: 1
 
 jobs:
-  windows:
-    name: Windows
+  build-windows:
+    name: build-windows
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -32,8 +32,15 @@ jobs:
       - name: Test Release
         run: dotnet test --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
 
+
+  publish:
+    if: ${{ github.ref == 'master' }}
+    needs: build-windows
+    name: publish
+    runs-on: windows-latest
+    steps:
       - name: NuGet Pack
-        run: dotnet pack --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
+        run: dotnet pack --configuration Release -nodeReuse:false src/InterfaceBaseInvoke.sln
 
       - name: NuGet Publish
         shell: pwsh
