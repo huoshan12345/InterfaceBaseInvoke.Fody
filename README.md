@@ -13,11 +13,11 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
 
  - [Installation](#installation)
  - [Usage](#usage)
+ - [Example](#example) 
 
 ---
 
 ## Installation
-
 - Install the NuGet packages [`Fody`](https://www.nuget.org/packages/Fody) and [`InterfaceBaseInvoke.Fody`](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody). Installing `Fody` explicitly is needed to enable weaving.
 
   ```
@@ -35,7 +35,6 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
     <InterfaceBaseInvoke />
   </Weavers>
   ```
-
 See [Fody usage](https://github.com/Fody/Home/blob/master/pages/usage.md) for general guidelines, and [Fody Configuration](https://github.com/Fody/Home/blob/master/pages/configuration.md) for additional options.
 
 ## Usage
@@ -44,7 +43,7 @@ Just like:
 - `var result = this.Base<Interface>().Method(1, "test");`
 - `var value = this.Base<Interface>().Property`
 
-## Simple example
+## Example
 ```
 public interface IService
 {
