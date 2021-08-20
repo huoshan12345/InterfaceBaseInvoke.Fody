@@ -1,7 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <Version>0.0.4</Version>
     <FodyVersion>6.5.2</FodyVersion>
   </PropertyGroup>
 
@@ -25,7 +24,6 @@
     <PackageTags>IL;MSIL;Fody;ILWeaving;Cecil</PackageTags>
     <PackageProjectUrl>https://github.com/huoshan12345/InterfaceBaseInvoke.Fody</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)..\output</PackageOutputPath>
     <PackageIconUrl>https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/raw/master/icon.png</PackageIconUrl>
   </PropertyGroup>
 

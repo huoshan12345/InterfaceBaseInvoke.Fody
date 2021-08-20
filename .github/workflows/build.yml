@@ -3,6 +3,8 @@ on: [push, pull_request]
 
 env:
   DOTNET_NOLOGO: 1
+  SLN_PATH: src/InterfaceBaseInvoke.sln
+  VERSION: 0.0.5
 
 jobs:
   build-windows:
@@ -18,32 +20,23 @@ jobs:
           dotnet-version: 5.0.x
 
       - name: NuGet Restore
-        run: dotnet restore -nodeReuse:false src/InterfaceBaseInvoke.sln
+        run: dotnet restore src/InterfaceBaseInvoke.sln
 
       - name: Build Debug
-        run: dotnet build --configuration Debug -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
+        run: dotnet build -c Debug --no-restore ${{ env.SLN_PATH }}
 
       - name: Build Release
-        run: dotnet build --configuration Release -nodeReuse:false --no-restore src/InterfaceBaseInvoke.sln
+        run: dotnet build -c Release --no-restore ${{ env.SLN_PATH }}
 
       - name: Test Debug
-        run: dotnet test --configuration Debug -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
+        run: dotnet test -c Debug --no-build ${{ env.SLN_PATH }}
 
       - name: Test Release
-        run: dotnet test --configuration Release -nodeReuse:false --no-build src/InterfaceBaseInvoke.sln
-
-
-  publish:
-    if: ${{ github.ref == 'refs/heads/master' }}
-    needs: build-windows
-    name: publish
-    runs-on: windows-latest
-    steps:
-      - name: NuGet Pack
-        run: dotnet pack --configuration Release -nodeReuse:false src/InterfaceBaseInvoke.sln
+        run: dotnet test -c Release --no-build ${{ env.SLN_PATH }}        
 
       - name: NuGet Publish
-        shell: pwsh
+        if: ${{ github.ref == 'refs/heads/master' }}
         run: |
           $path = [IO.Path]::Combine(".", "output", "*.nupkg")
+          dotnet pack -o $path -c Release ${{ env.SLN_PATH }} -p:PackageVersion=${{ env.VERSION }} 
           dotnet nuget push $path -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols true
