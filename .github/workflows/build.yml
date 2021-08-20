@@ -34,7 +34,7 @@ jobs:
 
 
   publish:
-    if: ${{ github.ref == 'master' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     needs: build-windows
     name: publish
     runs-on: windows-latest
