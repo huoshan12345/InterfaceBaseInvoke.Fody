@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/workflows/Build/badge.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/actions?query=workflow%3ABuild)
 [![NuGet package](https://img.shields.io/nuget/v/InterfaceBaseInvoke.Fody.svg?logo=NuGet)](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody)
-[![.net](https://img.shields.io/badge/.net%20-5.0-ff69b4.svg?)](https://www.microsoft.com/net/download)
+[![.net](https://img.shields.io/badge/.net%20standard-2.1-ff69b4.svg?)](https://www.microsoft.com/net/download)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/master/LICENSE)  
 ![Icon](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/raw/master/icon.png)
 
@@ -48,20 +48,22 @@ Just like:
 ```
 public interface IService
 {
-    int Property => 5
+    int Property => 5;
     void Method() => Console.WriteLine("Calling...");
 }
 
 public class Service : IService
 {
-    public int Property => this.Base<IService>().Property + 1; // call the implementation of interface's property
+    // call the implementation of interface's property
+    public int Property => this.Base<IService>().Property + 1;
 
     public void Method()
     {
         Console.WriteLine("Before call method");
-        this.Base<IService>().Method(); // call the implementation of interface's method
+        // call the implementation of interface's method
+        this.Base<IService>().Method();
         Console.WriteLine("After call method");
-    }    
+    }
 }
 ```
 

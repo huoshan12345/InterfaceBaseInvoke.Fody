@@ -486,13 +486,15 @@ namespace InterfaceBaseInvoke.Fody.Extensions
             {
                 return Dfs(instruction, instructions, node.Children[0], ref stack);
             }
-            else if (node.Children.Count > 1)
+
+            if (node.Children.Count > 1)
             {
                 foreach (var child in node.Children)
                 {
                     var perservedStack = stack.Clone();
                     if (!Dfs(instruction, instructions, child, ref perservedStack))
                         continue;
+
                     stack = perservedStack;
                     return true;
                 }
