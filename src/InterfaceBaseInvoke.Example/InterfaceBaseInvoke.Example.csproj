@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fody" Version="$(FodyVersion)" PrivateAssets="all" />
-    <PackageReference Include="InterfaceBaseInvoke.Fody" Version="0.0.4" />
+    <PackageReference Include="InterfaceBaseInvoke.Fody" Version="0.0.6" />
   </ItemGroup>
 
 </Project>

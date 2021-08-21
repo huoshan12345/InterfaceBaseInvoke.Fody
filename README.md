@@ -14,7 +14,7 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
 
  - [Installation](#installation)
  - [Usage](#usage)
- - [Example](#example) 
+ - [Example](#examples) 
 
 ---
 
@@ -44,26 +44,30 @@ Just like:
 - `var result = this.Base<Interface>().Method(1, "test");`
 - `var value = this.Base<Interface>().Property`
 
-## Example
-```
-public interface IService
-{
-    int Property => 5;
-    void Method() => Console.WriteLine("Calling...");
-}
+## Examples
+- [An example project](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Example)
 
-public class Service : IService
-{
-    // call the implementation of interface's property
-    public int Property => this.Base<IService>().Property + 1;
+- Unit tests can also serve as examples of API usage. See test cases for [valid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Tests.AssemblyToProcess) and [invalid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess).
 
-    public void Method()
+- Basic example:
+    ```
+    public interface IService
     {
-        Console.WriteLine("Before call method");
-        // call the implementation of interface's method
-        this.Base<IService>().Method();
-        Console.WriteLine("After call method");
+        int Property => 5;
+        void Method() => Console.WriteLine("Calling...");
     }
-}
-```
 
+    public class Service : IService
+    {
+        // call the implementation of interface's property
+        public int Property => this.Base<IService>().Property + 1;
+
+        public void Method()
+        {
+            Console.WriteLine("Before call method");
+            // call the implementation of interface's method
+            this.Base<IService>().Method();
+            Console.WriteLine("After call method");
+        }
+    }
+    ```

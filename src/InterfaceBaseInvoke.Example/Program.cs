@@ -22,7 +22,17 @@ namespace InterfaceBaseInvoke.Example
         void IService.Method() => Console.WriteLine(Name);
     }
 
-    public class Service : IService1, IService2
+    public interface IService3
+    {
+        void Method<T>() => Console.WriteLine(typeof(T).Name);
+    }
+
+    public interface IService4<T>
+    {
+        void Method() => Console.WriteLine(typeof(T).Name);
+    }
+
+    public class Service : IService1, IService2, IService3, IService4<string>
     {
         public void Method() => throw new InvalidOperationException();
         public int Property => throw new InvalidOperationException();
@@ -32,6 +42,8 @@ namespace InterfaceBaseInvoke.Example
             Console.WriteLine("Start invoking...");
             this.Base<IService1>().Method();
             this.Base<IService2>().Method();
+            this.Base<IService3>().Method<int>();
+            this.Base<IService4<string>>().Method();
             Console.WriteLine(this.Base<IService1>().Property);
             Console.WriteLine(this.Base<IService2>().Property);
             Console.WriteLine("End invoking.");
