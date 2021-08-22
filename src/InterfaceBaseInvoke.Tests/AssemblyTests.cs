@@ -28,7 +28,7 @@ namespace InterfaceBaseInvoke.Tests
                     continue;
 
                 var typeName = metadataReader.GetString(typeRef.Name);
-                Assert.DoesNotContain(nameof(ValueTuple), typeName);
+                typeName.ShouldNotContain(nameof(ValueTuple));
             }
         }
 

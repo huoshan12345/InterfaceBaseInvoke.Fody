@@ -1,36 +1,37 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
+﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class OverridedGenericMethodTestCases
     {
-        public string Method_Invoke()
+        public StringTestResult Method_Invoke()
         {
             var obj = new HasOverridedGenericMethod();
-            return obj.Base<IHasOverridedGenericMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(HasOverridedGenericMethod)}.{nameof(Method_Invoke)}");
+            var result = obj.Base<IHasOverridedGenericMethod>().Method(1, "a");
+            return ("", result);
         }
 
-        public string Method_InvokeTwice()
+        public StringTestResult Method_InvokeTwice()
         {
             var obj = new HasOverridedGenericMethod();
             var a = obj.Base<IHasOverridedGenericMethod>().Method(1, "a");
             var b = obj.Base<IHasOverridedGenericMethod>().Method(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("", result);
         }
 
-        public string GenericMethod_Invoke()
+        public StringTestResult GenericMethod_Invoke()
         {
             var obj = new HasOverridedGenericMethod();
-            return obj.Base<IHasOverridedGenericMethod>().Method<int>(2 + (int)Math.Pow(3, 3), $"{nameof(HasOverridedGenericMethod)}.{nameof(GenericMethod_Invoke)}");
+            var result = obj.Base<IHasOverridedGenericMethod>().Method<int>(2, "b");
+            return ("", result);
         }
 
-        public string GenericMethod_InvokeTwice()
+        public StringTestResult GenericMethod_InvokeTwice()
         {
             var obj = new HasOverridedGenericMethod();
             var a = obj.Base<IHasOverridedGenericMethod>().Method<int>(1, "a");
             var b = obj.Base<IHasOverridedGenericMethod>().Method<string>(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("", result);
         }
     }
 }

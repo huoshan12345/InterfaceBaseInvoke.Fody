@@ -1,39 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
+﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class DefaultGenericMethodTestCases
     {
-        public string Method_Invoke()
+        public StringTestResult Method_Invoke()
         {
             var obj = new HasDefaultGenericMethod();
-            return obj.Base<IHasDefaultGenericMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(IHasDefaultGenericMethod)}");
+            var result = obj.Base<IHasDefaultGenericMethod>().Method(1, "a");
+            return ("", result);
         }
 
-        public string Method_InvokeTwice()
+        public StringTestResult Method_InvokeTwice()
         {
             var obj = new HasDefaultGenericMethod();
             var a = obj.Base<IHasDefaultGenericMethod>().Method(1, "a");
             var b = obj.Base<IHasDefaultGenericMethod>().Method(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("", result);
         }
 
-        public string GenericMethod_Invoke()
+        public StringTestResult GenericMethod_Invoke()
         {
             var obj = new HasDefaultGenericMethod();
-            return obj.Base<IHasDefaultGenericMethod>().Method<int>(2 + (int)Math.Pow(3, 3), nameof(IHasDefaultGenericMethod));
+            var result = obj.Base<IHasDefaultGenericMethod>().Method<int>(2, "b");
+            return ("", result);
         }
 
-        public string GenericMethod_InvokeTwice()
+        public StringTestResult GenericMethod_InvokeTwice()
         {
             var obj = new HasDefaultGenericMethod();
             var a = obj.Base<IHasDefaultGenericMethod>().Method<int>(1, "a");
             var b = obj.Base<IHasDefaultGenericMethod>().Method<string>(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("", result);
         }
     }
 }

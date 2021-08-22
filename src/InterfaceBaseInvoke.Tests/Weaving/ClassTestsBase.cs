@@ -26,24 +26,5 @@ namespace InterfaceBaseInvoke.Tests.Weaving
 
         protected string ShouldHaveError(string methodName)
             => InvalidAssemblyToProcessFixture.ShouldHaveError($"{InvalidAssembly}.{ClassName}", methodName, true);
-
-        protected void CheckEqual(string methodName)
-        {
-            object obj = GetInstance();
-            var method = obj.GetType().GetMethod(methodName);
-
-            Assert.NotNull(method);
-
-            var result = method!.IsStatic
-                ? method.Invoke(null, null)
-                : method.Invoke(obj, null);
-
-            Assert.NotNull(result);
-            Assert.True(result is ValueTuple<string, string>);
-
-            var (expected, actual) = ((string, string))result!;
-
-            Assert.Equal(expected, actual);
-        }
     }
 }

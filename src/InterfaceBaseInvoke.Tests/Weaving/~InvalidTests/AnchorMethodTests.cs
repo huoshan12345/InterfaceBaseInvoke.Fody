@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
+﻿using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
 using InterfaceBaseInvoke.Tests.Support;
 using Xunit;
 

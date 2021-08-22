@@ -1,27 +1,36 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class DefaultMethodTestCases
     {
-        public string Property_Invoke()
+        public StringTestResult Property_Invoke()
         {
-            return new HasDefaultMethod().Base<IHasDefaultMethod>().Property;
+            var result = new HasDefaultMethod().Base<IHasDefaultMethod>().Property;
+            return ("", result);
         }
 
-        public string DefaultMethod_Invoke()
+        public StringTestResult DefaultMethod_Invoke()
         {
             var obj = new HasDefaultMethod();
-            return obj.Base<IHasDefaultMethod>().Method(2 + (int)Math.Pow(3, 3), nameof(HasDefaultMethod));
+            var result = obj.Base<IHasDefaultMethod>().Method(1, "a");
+            return ("", result);
         }
 
-        public string DefaultMethod_InvokeTwice()
+        public StringTestResult DefaultMethod_ComplexArguments_Invoke()
+        {
+            var obj = new HasDefaultMethod();
+            var result = obj.Base<IHasDefaultMethod>().Method(1 + (int)Math.Pow(2, 3), nameof(DefaultMethodTestCases) + "." + nameof(DefaultMethod_ComplexArguments_Invoke));
+            return ("", result);
+        }
+
+        public StringTestResult DefaultMethod_InvokeTwice()
         {
             var obj = new HasDefaultMethod();
             var a = obj.Base<IHasDefaultMethod>().Method(1, "a");
             var b = obj.Base<IHasDefaultMethod>().Method(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("", result);
         }
     }
 }

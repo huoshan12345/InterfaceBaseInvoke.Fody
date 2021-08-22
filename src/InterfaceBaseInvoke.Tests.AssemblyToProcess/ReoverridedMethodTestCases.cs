@@ -1,22 +1,21 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
+﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class ReoverridedMethodTestCases
     {
-        public string Property_InvokeTwice()
+        public StringTestResult Property_InvokeTwice()
         {
             var obj = new HasReoverridedMethod();
-            return obj.Base<IHasOverridedMethod>().Property + "----" + obj.Base<IHasReoverridedMethod>().Property;
+            var result = obj.Base<IHasOverridedMethod>().Property + "----" + obj.Base<IHasReoverridedMethod>().Property;
+            return ("", result);
         }
 
-        public string ReoverrideMethod_InvokeTwice()
+        public StringTestResult ReoverrideMethod_InvokeTwice()
         {
             var obj = new HasReoverridedMethod();
             var a = obj.Base<IHasOverridedMethod>().Method(1, "a");
             var b = obj.Base<IHasReoverridedMethod>().Method(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("", result);
         }
     }
 }
