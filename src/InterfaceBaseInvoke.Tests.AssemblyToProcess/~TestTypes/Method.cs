@@ -4,14 +4,19 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public interface IHasDefaultMethod
     {
-        string Property => $"{nameof(IHasDefaultMethod)}.{nameof(Property)}";
-        string Method(int x, string y) => $"{nameof(IHasDefaultMethod)}.{nameof(Method)}.{x}.{y}";
+        string Property => $"{nameof(Property)}";
+        string Method(int x, string y) => $"{nameof(Method)}.{x}.{y}";
     }
 
     public class HasDefaultMethod : IHasDefaultMethod
     {
         public string Property => throw new InvalidOperationException();
         public virtual string Method(int x, string y) => throw new InvalidOperationException();
+    }
+
+    public class DerivedHasDefaultMethod : HasDefaultMethod
+    {
+        public override string Method(int x, string y) => throw new InvalidOperationException();
     }
 
     public interface IHasEmptyMethod
@@ -22,8 +27,8 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 
     public interface IHasOverridedMethod : IHasEmptyMethod
     {
-        string IHasEmptyMethod.Property => $"{nameof(IHasOverridedMethod)}.{nameof(Property)}";
-        string IHasEmptyMethod.Method(int x, string y) => $"{nameof(IHasOverridedMethod)}.{nameof(Method)}({x}, {y})";
+        string IHasEmptyMethod.Property => $"{nameof(Property)}";
+        string IHasEmptyMethod.Method(int x, string y) => $"{nameof(Method)}({x}, {y})";
     }
 
     public class HasOverridedMethod : IHasOverridedMethod
