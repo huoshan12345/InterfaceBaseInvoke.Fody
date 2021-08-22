@@ -209,8 +209,9 @@ namespace InterfaceBaseInvoke.Fody.Processing
             {
                 interfaceDefaultMethodRef = interfaceDefaultMethod.MakeGenericMethod(genericInstanceMethod.GenericArguments);
             }
-
-            // use Calli instead of Call to avoid MethodAccessException
+            
+            // we have to use Calli instead of Call to avoid MethodAccessException
+            // we cannot use Ldftn to get the method pointer because of MethodAccessException
             var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
             var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
             var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, interfaceDefaultMethodRef).Build();

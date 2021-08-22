@@ -5,12 +5,6 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class OverridedGenericMethodTestCases
     {
-        private class HasOverridedGenericMethod : IHasOverridedGenericMethod
-        {
-            public string Method(int x, string y) => throw new InvalidOperationException();
-            public string Method<T>(int x, string y) => throw new InvalidOperationException();
-        }
-
         public string Method_Invoke()
         {
             var obj = new HasOverridedGenericMethod();

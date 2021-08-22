@@ -5,12 +5,6 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class ReoverridedMethodTestCases
     {
-        private class HasReoverridedMethod : IHasReoverridedMethod
-        {
-            public string Property => throw new InvalidOperationException();
-            public string Method(int x, string y) => throw new InvalidOperationException();
-        }
-
         public string Property_InvokeTwice()
         {
             var obj = new HasReoverridedMethod();

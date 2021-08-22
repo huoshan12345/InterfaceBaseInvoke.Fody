@@ -7,12 +7,6 @@ namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
 {
     public class AnchorMethodTestCases
     {
-        private class HasDefaultMethod : IHasDefaultMethod
-        {
-            public string Property => throw new InvalidOperationException();
-            public virtual string Method(int x, string y) => throw new InvalidOperationException();
-        }
-
         private class DerivedHasDefaultMethod : HasDefaultMethod
         {
             public override string Method(int x, string y) => throw new InvalidOperationException();
@@ -33,7 +27,7 @@ namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
         public string Base_MoreThanOnce()
         {
             var obj = new HasDefaultMethod();
-            return obj.Base<IHasDefaultMethod>().Base<IHasDefaultMethod>().Method(0, string.Empty);
+            return obj.Base<HasDefaultMethod>().Base<HasDefaultMethod>().Method(0, string.Empty);
         }
     }
 }

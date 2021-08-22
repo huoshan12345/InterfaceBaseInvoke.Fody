@@ -8,35 +8,29 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class DefaultGenericMethodTestCases
     {
-        private class DefaultGenericMethod : IHasDefaultGenericMethod
+        public static string Method_Invoke()
         {
-            public string Method(int x, string y) => throw new InvalidOperationException();
-            public string Method<T>(int x, string y) => throw new InvalidOperationException();
+            var obj = new HasDefaultGenericMethod();
+            return obj.Base<IHasDefaultGenericMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(IHasDefaultGenericMethod)}");
         }
 
-        public string Method_Invoke()
+        public static string Method_InvokeTwice()
         {
-            var obj = new DefaultGenericMethod();
-            return obj.Base<IHasDefaultGenericMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(Method_Invoke)}");
-        }
-
-        public string Method_InvokeTwice()
-        {
-            var obj = new DefaultGenericMethod();
+            var obj = new HasDefaultGenericMethod();
             var a = obj.Base<IHasDefaultGenericMethod>().Method(1, "a");
             var b = obj.Base<IHasDefaultGenericMethod>().Method(2, "b");
             return a + "----" + b;
         }
 
-        public string GenericMethod_Invoke()
+        public static string GenericMethod_Invoke()
         {
-            var obj = new DefaultGenericMethod();
-            return obj.Base<IHasDefaultGenericMethod>().Method<int>(2 + (int)Math.Pow(3, 3), $"{nameof(DefaultGenericMethod)}.{nameof(GenericMethod_Invoke)}");
+            var obj = new HasDefaultGenericMethod();
+            return obj.Base<IHasDefaultGenericMethod>().Method<int>(2 + (int)Math.Pow(3, 3), nameof(IHasDefaultGenericMethod));
         }
 
-        public string GenericMethod_InvokeTwice()
+        public static string GenericMethod_InvokeTwice()
         {
-            var obj = new DefaultGenericMethod();
+            var obj = new HasDefaultGenericMethod();
             var a = obj.Base<IHasDefaultGenericMethod>().Method<int>(1, "a");
             var b = obj.Base<IHasDefaultGenericMethod>().Method<string>(2, "b");
             return a + "----" + b;
