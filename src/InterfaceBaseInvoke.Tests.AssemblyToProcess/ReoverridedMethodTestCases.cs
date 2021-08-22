@@ -1,28 +1,24 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class ReoverridedMethodTestCases
     {
-        private class HasReoverridedMethod : IHasReoverridedMethod
-        {
-            public string Property => throw new InvalidOperationException();
-            public string Method(int x, string y) => throw new InvalidOperationException();
-        }
-
-        public string Property_InvokeTwice()
+        public StringTestResult Property_InvokeTwice()
         {
             var obj = new HasReoverridedMethod();
-            return obj.Base<IHasOverridedMethod>().Property + "----" + obj.Base<IHasReoverridedMethod>().Property;
+            var result = obj.Base<IHasOverridedMethod>().Property + "----" + obj.Base<IHasReoverridedMethod>().Property;
+            return ("Property----IHasReoverridedMethod.Property", result);
         }
 
-        public string ReoverrideMethod_InvokeTwice()
+        public StringTestResult ReoverrideMethod_InvokeTwice()
         {
             var obj = new HasReoverridedMethod();
             var a = obj.Base<IHasOverridedMethod>().Method(1, "a");
             var b = obj.Base<IHasReoverridedMethod>().Method(2, "b");
-            return a + "----" + b;
+            var result = a + "----" + b;
+            return ("Method(1, a)----IHasReoverridedMethod.Method(2, b)", result);
         }
     }
 }

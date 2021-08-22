@@ -24,6 +24,7 @@
     <ProjectReference Include="..\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" />
     <ProjectReference Include="..\InterfaceBaseInvoke.Tests.AssemblyToProcess\InterfaceBaseInvoke.Tests.AssemblyToProcess.csproj" />
     <ProjectReference Include="..\InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess\InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess.csproj" />
+    <ProjectReference Include="..\InterfaceBaseInvoke.Tests.SourceGenerator\InterfaceBaseInvoke.Tests.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess.csproj">
       <Aliases>standard</Aliases>
     </ProjectReference>

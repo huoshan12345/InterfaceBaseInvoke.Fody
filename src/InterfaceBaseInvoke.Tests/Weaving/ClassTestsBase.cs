@@ -1,9 +1,11 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Fody;
 using InterfaceBaseInvoke.Fody;
 using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
 using InterfaceBaseInvoke.Tests.Support;
+using Xunit;
 
 namespace InterfaceBaseInvoke.Tests.Weaving
 {

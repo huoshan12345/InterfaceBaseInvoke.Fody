@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <WarningsAsErrors>CS8785</WarningsAsErrors>
     <LangVersion>latest</LangVersion>
     <AnalysisLevel>5.0</AnalysisLevel>
     <Nullable>enable</Nullable>

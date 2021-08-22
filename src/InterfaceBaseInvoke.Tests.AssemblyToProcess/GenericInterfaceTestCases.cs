@@ -1,45 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Global
 
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class GenericInterfaceTestCases
     {
-        private class GenericClass<T> : IGenericInterface<T>
+        public StringTestResult Method_Invoke()
         {
-            public string Method(int x, string y) => throw new InvalidOperationException();
-            public string Method<TParameter>(int x, string y) => throw new InvalidOperationException();
+            var obj = new GenericInterface<int>();
+            var result = obj.Base<IGenericHasDefaultGenericMethod<int>>().Method(1, "a");
+            return ("Method(1, a)", result);
         }
 
-        public string Method_Invoke()
+        public StringTestResult Method_InvokeTwice()
         {
-            var obj = new GenericClass<int>();
-            return obj.Base<IGenericInterface<int>>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(GenericClass<int>)}.{nameof(Method_Invoke)}");
+            var obj = new GenericInterface<string>();
+            var a = obj.Base<IGenericHasDefaultGenericMethod<string>>().Method(1, "a");
+            var b = obj.Base<IGenericHasDefaultGenericMethod<string>>().Method(2, "b");
+            var result = a + "----" + b;
+            return ("Method(1, a)----Method(2, b)", result);
         }
 
-        public string Method_InvokeTwice()
+        public StringTestResult GenericMethod_Invoke()
         {
-            var obj = new GenericClass<string>();
-            var a = obj.Base<IGenericInterface<string>>().Method(1, "a");
-            var b = obj.Base<IGenericInterface<string>>().Method(2, "b");
-            return a + "----" + b;
+            var obj = new GenericInterface<int>();
+            var result = obj.Base<IGenericHasDefaultGenericMethod<int>>().Method<string>(1, "a");
+            return ("Method<String>(1, a)", result);
         }
 
-        public string GenericMethod_Invoke()
+        public StringTestResult GenericMethod_InvokeTwice()
         {
-            var obj = new GenericClass<int>();
-            return obj.Base<IGenericInterface<int>>().Method<string>(2 + (int)Math.Pow(3, 3), $"{nameof(GenericClass<string>)}.{nameof(GenericMethod_Invoke)}");
-        }
-
-        public string GenericMethod_InvokeTwice()
-        {
-            var obj = new GenericClass<string>();
-            var a = obj.Base<IGenericInterface<string>>().Method<string>(1, "a");
-            var b = obj.Base<IGenericInterface<string>>().Method<int>(2, "b");
-            return a + "----" + b;
+            var obj = new GenericInterface<string>();
+            var a = obj.Base<IGenericHasDefaultGenericMethod<string>>().Method<string>(1, "a");
+            var b = obj.Base<IGenericHasDefaultGenericMethod<string>>().Method<int>(2, "b");
+            var result = a + "----" + b;
+            return ("Method<String>(1, a)----Method<Int32>(2, b)", result);
         }
     }
 }
