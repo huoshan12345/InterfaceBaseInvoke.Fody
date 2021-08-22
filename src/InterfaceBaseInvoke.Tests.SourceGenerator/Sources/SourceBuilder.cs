@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace InterfaceBaseInvoke.Tests.SourceGenerator
+namespace InterfaceBaseInvoke.Tests.SourceGenerator.Sources
 {
     internal sealed class SourceBuilder : IDisposable
     {

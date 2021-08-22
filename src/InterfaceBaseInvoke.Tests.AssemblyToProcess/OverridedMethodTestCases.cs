@@ -5,12 +5,6 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class OverridedMethodTestCases
     {
-        private class HasOverridedMethod : IHasOverridedMethod
-        {
-            public string Property => throw new InvalidOperationException();
-            public string Method(int x, string y) => throw new InvalidOperationException();
-        }
-
         public string Property_Invoke()
         {
             var obj = new HasOverridedMethod();

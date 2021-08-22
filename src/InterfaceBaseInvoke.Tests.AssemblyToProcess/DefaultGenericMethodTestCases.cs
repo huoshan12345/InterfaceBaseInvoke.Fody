@@ -8,13 +8,13 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
 {
     public class DefaultGenericMethodTestCases
     {
-        public static string Method_Invoke()
+        public string Method_Invoke()
         {
             var obj = new HasDefaultGenericMethod();
             return obj.Base<IHasDefaultGenericMethod>().Method(2 + (int)Math.Pow(3, 3), $"{nameof(IHasDefaultGenericMethod)}");
         }
 
-        public static string Method_InvokeTwice()
+        public string Method_InvokeTwice()
         {
             var obj = new HasDefaultGenericMethod();
             var a = obj.Base<IHasDefaultGenericMethod>().Method(1, "a");
@@ -22,13 +22,13 @@ namespace InterfaceBaseInvoke.Tests.AssemblyToProcess
             return a + "----" + b;
         }
 
-        public static string GenericMethod_Invoke()
+        public string GenericMethod_Invoke()
         {
             var obj = new HasDefaultGenericMethod();
             return obj.Base<IHasDefaultGenericMethod>().Method<int>(2 + (int)Math.Pow(3, 3), nameof(IHasDefaultGenericMethod));
         }
 
-        public static string GenericMethod_InvokeTwice()
+        public string GenericMethod_InvokeTwice()
         {
             var obj = new HasDefaultGenericMethod();
             var a = obj.Base<IHasDefaultGenericMethod>().Method<int>(1, "a");
