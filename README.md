@@ -43,7 +43,7 @@ Just like:
 ## Examples
 - [An example project](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Example)
 
-- Unit tests can also serve as examples of API usage. See test cases for [valid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Tests.AssemblyToProcess) and [invalid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess).
+- Unit tests can also serve as examples of API usage. See test cases for [valid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/test/InterfaceBaseInvoke.Tests.AssemblyToProcess) and [invalid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/test/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess).
 
 - Basic example:
     ```
