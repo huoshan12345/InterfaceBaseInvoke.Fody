@@ -4,10 +4,11 @@
     <!--This project must target netstandard2.0.-->
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <PackageId>$(MSBuildProjectName).Fody</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-    <PackageReference Include="FodyHelpers" Version="$(FodyVersion)" />
+    <PackageReference Include="FodyHelpers" Version="6.6.2" />
   
   </ItemGroup>
 </Project>
