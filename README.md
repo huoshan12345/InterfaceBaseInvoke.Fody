@@ -11,11 +11,9 @@ The feature has not been implemented by C# team yet.
 The status for it can be seen in https://github.com/dotnet/csharplang/issues/2337 
 
 ---
-
  - [Installation](#installation)
  - [Usage](#usage)
  - [Example](#examples) 
-
 ---
 
 ## Installation
@@ -25,8 +23,6 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
   PM> Install-Package Fody
   PM> Install-Package InterfaceBaseInvoke.Fody
   ```
-
-- Add the `PrivateAssets="all"` metadata attribute to the `<PackageReference />` items of `Fody` and `InterfaceBaseInvoke.Fody` in your project file, so they won't be listed as dependencies.
 
 - If you already have a `FodyWeavers.xml` file in the root directory of your project, add the `<InterfaceBaseInvoke />` tag there. This file will be created on the first build if it doesn't exist:
 
