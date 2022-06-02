@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <DisableFody>true</DisableFody>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FodyHelpers" Version="6.6.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" />
+    <ProjectReference Include="..\..\src\InterfaceBaseInvoke\InterfaceBaseInvoke.csproj" />
+    <ProjectReference Include="..\InterfaceBaseInvoke.Tests.AssemblyToProcess\InterfaceBaseInvoke.Tests.AssemblyToProcess.csproj" />
+    <ProjectReference Include="..\InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess\InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess.csproj" />
+    <ProjectReference Include="..\InterfaceBaseInvoke.Tests.SourceGenerator\InterfaceBaseInvoke.Tests.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess.csproj" />
+  </ItemGroup>
+
+</Project>
