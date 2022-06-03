@@ -17,11 +17,11 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
 ---
 
 ## Installation
-- Install the NuGet packages [`Fody`](https://www.nuget.org/packages/Fody) and [`InterfaceBaseInvoke.Fody`](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody). Installing `Fody` explicitly is needed to enable weaving.
+- Include the [`Fody`](https://www.nuget.org/packages/Fody) and [`InterfaceBaseInvoke.Fody`](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody) NuGet packages with a `PrivateAssets="all"` attribute on their `<PackageReference />` items. Installing `Fody` explicitly is needed to enable weaving.
 
-  ```
-  PM> Install-Package Fody
-  PM> Install-Package InterfaceBaseInvoke.Fody
+  ```XML
+  <PackageReference Include="Fody" Version="..." PrivateAssets="all" />
+  <PackageReference Include="InterfaceBaseInvoke.Fody" Version="..." PrivateAssets="all" />
   ```
 
 - If you already have a `FodyWeavers.xml` file in the root directory of your project, add the `<InterfaceBaseInvoke />` tag there. This file will be created on the first build if it doesn't exist:
