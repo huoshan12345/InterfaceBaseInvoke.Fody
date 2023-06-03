@@ -57,13 +57,13 @@ jobs:
           tag_name: ${{ env.VERSION }}
           on_tag_exists: skip
         env:
-          GITHUB_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
         if: github.ref == 'refs/heads/master'
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.VERSION }}
-          token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           skipIfReleaseExists: true
