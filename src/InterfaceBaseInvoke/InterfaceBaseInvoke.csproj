@@ -14,8 +14,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.6.2" PrivateAssets="none" />
-    <PackageReference Include="FodyPackaging" Version="6.6.2" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="6.7.0" PrivateAssets="none" />
+    <PackageReference Include="FodyPackaging" Version="6.7.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" PrivateAssets="All" />
