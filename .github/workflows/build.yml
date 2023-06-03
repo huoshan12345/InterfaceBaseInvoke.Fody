@@ -28,6 +28,9 @@ jobs:
             6.0.x
             7.0.x
 
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION }} -v q
+
       - name: Test Debug
         run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug
 
