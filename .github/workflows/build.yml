@@ -12,6 +12,7 @@ env:
   DOTNET_NOLOGO: 1
   VERSION: 0.0.1
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+  SOLUTION: InterfaceBaseInvoke.sln
 
 jobs:
   build:
@@ -28,13 +29,10 @@ jobs:
             7.0.x
 
       - name: Test Debug
-        run: |
-          ./build/test_all.ps1 Debug prod
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug
 
       - name: Test Release
-        shell: pwsh
-        run: |
-          ./build/test_all.ps1 Release prod
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release
 
       - name: NuGet Publish
         if: ${{ github.ref == 'refs/heads/master' }}

@@ -5,6 +5,8 @@
     <DisableFody>true</DisableFody>
     <_RefProject>InterfaceBaseInvoke.Tests.AssemblyToProcess</_RefProject>
     <_RefProjectDir>..\$(_RefProject)\</_RefProjectDir>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
