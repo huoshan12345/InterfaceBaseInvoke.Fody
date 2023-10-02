@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Xunit;
-using Xunit.Sdk;
-using System.Diagnostics.CodeAnalysis;
 
 namespace InterfaceBaseInvoke.Tests.Support
 {
@@ -11,7 +9,7 @@ namespace InterfaceBaseInvoke.Tests.Support
         public static T ShouldNotBeNull<T>(this T? actual) where T : class
         {
             Assert.NotNull(actual);
-            return actual ?? throw new NotNullException();
+            return actual;
         }
 
         public static void ShouldNotContain<T>(this IEnumerable<T> items, Func<T, bool> predicate)
