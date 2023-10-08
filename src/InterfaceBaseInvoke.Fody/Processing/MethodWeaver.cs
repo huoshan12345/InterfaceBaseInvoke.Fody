@@ -167,11 +167,6 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 if (!IsInterfaceMethodCandidate(p, interfaceTypeRef, interfaceTypeDef))
                     continue;
 
-                if (_method.FullName.Contains("OverridedGenericMethodTestCases::GenericMethod_Invoke"))
-                {
-
-                }
-
                 var graph = Instructions.BuildGraph();
                 var args = p.GetArgumentPushInstructions(Instructions, graph);
                 var arg = args.First();
