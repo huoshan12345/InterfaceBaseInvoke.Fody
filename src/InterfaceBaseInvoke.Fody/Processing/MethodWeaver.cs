@@ -169,7 +169,8 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 if (!IsInterfaceMethodCandidate(p, interfaceTypeRef, interfaceTypeDef))
                     continue;
 
-                // graph should be built every time here because Instructions may be updated.
+                // We build a graph for the Instructions here to validate the method body as we emit new instructions.
+                // The graph should be built every time here because Instructions may be updated.
                 var graph = Instructions.BuildGraph();
                 var args = p.GetArgumentPushInstructions(Instructions, graph);
                 var arg = args.First();
