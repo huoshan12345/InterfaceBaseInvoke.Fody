@@ -171,12 +171,12 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
                 // We build a graph for the Instructions here to validate the method body as we emit new instructions.
                 // The graph should be built every time here because Instructions may be updated.
-                var graph = Instructions.BuildGraph();
-                var args = p.GetArgumentPushInstructions(Instructions, graph);
-                var arg = args.First();
+                //var graph = Instructions.BuildGraph();
+                //var args = p.GetArgumentPushInstructions(Instructions, graph);
+                //var arg = args.First();
 
-                if (arg != instruction)
-                    continue;
+                //if (arg != instruction)
+                //    continue;
 
                 p = EmitBaseInvokeInstructions(instruction, interfaceTypeRef, interfaceTypeDef, p);
                 return p.Next;
@@ -224,7 +224,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 _il.Create(OpCodes.Ldtoken, interfaceDefaultMethodRef),
                 _il.Create(OpCodes.Stloc, handle),
                 _il.Create(OpCodes.Ldloca, handle),
-                _il.Create(OpCodes.Call, Methods.GetFunctionPointer),
+                _il.Create(OpCodes.Call, Methods.FunctionPointer),
                 _il.Create(OpCodes.Stloc, ptr),
                 _il.Create(OpCodes.Ldloca, ptr),
                 _il.Create(OpCodes.Call, Methods.Is64BitProcess),

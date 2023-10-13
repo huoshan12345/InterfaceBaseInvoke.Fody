@@ -39,14 +39,14 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
     public sealed class MethodReferences
     {
-        public MethodReference GetFunctionPointer { get; }
+        public MethodReference FunctionPointer { get; }
         public MethodReference ToInt32 { get; }
         public MethodReference ToInt64 { get; }
         public MethodReference Is64BitProcess { get; }
 
         public MethodReferences(ModuleDefinition module, TypeReferences types)
         {
-            GetFunctionPointer = MethodRefBuilder.MethodByNameAndSignature(module, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr, Array.Empty<TypeReference>()).Build();
+            FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(module, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr, Array.Empty<TypeReference>()).Build();
             ToInt32 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt32)).Build();
             ToInt64 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt64)).Build();
             Is64BitProcess = MethodRefBuilder.PropertyGet(module, types.Environment, nameof(Environment.Is64BitProcess)).Build();
