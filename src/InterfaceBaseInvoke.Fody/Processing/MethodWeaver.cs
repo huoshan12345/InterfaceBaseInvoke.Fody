@@ -151,9 +151,11 @@ namespace InterfaceBaseInvoke.Fody.Processing
             if (next == null)
                 throw NoInterfaceMethodInvocationException();
 
+            // var x = obj.Base<T>();
             if (IsStloc(next))
                 throw NoInterfaceMethodInvocationException();
 
+            // obj.Base<T>().SomeMethod();
             if (IsCallAndPop(next) && !IsInterfaceMethodCandidate(next, interfaceTypeRef, interfaceTypeDef))
             {
                 if (IsAnchorMethodCall(next))
@@ -167,6 +169,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
                 if (!IsInterfaceMethodCandidate(p, interfaceTypeRef, interfaceTypeDef))
                     continue;
 
+                // graph should be built every time here because Instructions may be updated.
                 var graph = Instructions.BuildGraph();
                 var args = p.GetArgumentPushInstructions(Instructions, graph);
                 var arg = args.First();
