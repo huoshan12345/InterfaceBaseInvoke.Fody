@@ -1,8 +1,4 @@
-﻿// ReSharper disable UnusedType.Global
-// ReSharper disable UnusedMember.Global
-using Xunit;
-
-namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
+﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 public class DefaultGenericMethodTestCases
 {

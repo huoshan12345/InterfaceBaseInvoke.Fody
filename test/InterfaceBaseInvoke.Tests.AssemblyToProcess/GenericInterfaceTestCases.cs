@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
+﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 public class GenericInterfaceTestCases
 {

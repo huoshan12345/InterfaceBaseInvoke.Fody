@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using InterfaceBaseInvoke.Tests.AssemblyToProcess;
+﻿using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
 {

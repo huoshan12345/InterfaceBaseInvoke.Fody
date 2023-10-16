@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
+﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 public interface IHasDefaultMethod
 {
