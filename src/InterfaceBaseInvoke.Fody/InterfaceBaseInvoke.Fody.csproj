@@ -5,8 +5,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
     <PackageId>$(MSBuildProjectName).Fody</PackageId>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="6.8.0" />
+    <PackageReference Include="MoreFodyHelpers" Version="0.0.5" />
   </ItemGroup>
 </Project>

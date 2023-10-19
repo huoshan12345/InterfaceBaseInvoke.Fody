@@ -1,6 +1,3 @@
-using System;
-using Xunit;
-
 namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 public class DefaultMethodTestCases

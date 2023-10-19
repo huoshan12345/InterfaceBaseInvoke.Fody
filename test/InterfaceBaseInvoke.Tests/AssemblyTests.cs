@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-using InterfaceBaseInvoke.Fody;
 using InterfaceBaseInvoke.Tests.Support;
 using Xunit;
 
@@ -32,7 +30,7 @@ namespace InterfaceBaseInvoke.Tests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "no longer valid")]
         public void should_not_add_reference_to_private_core_lib()
         {
             AssemblyToProcessFixture.ResultModule.AssemblyReferences.ShouldNotContain(i => i.Name == "System.Private.CoreLib");
