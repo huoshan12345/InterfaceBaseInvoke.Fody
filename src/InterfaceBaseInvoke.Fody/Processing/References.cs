@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using InterfaceBaseInvoke.Fody.Extensions;
-using InterfaceBaseInvoke.Fody.Models;
-using Mono.Cecil;
-
-namespace InterfaceBaseInvoke.Fody.Processing
+﻿namespace InterfaceBaseInvoke.Fody.Processing
 {
     public sealed class References
     {
@@ -29,11 +22,11 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         public TypeReferences(ModuleDefinition module)
         {
-            Environment = typeof(Environment).ToTypeReference(module);
-            IntPtr = typeof(IntPtr).ToTypeReference(module);
-            Int32 = typeof(int).ToTypeReference(module);
-            RuntimeMethodHandle = typeof(RuntimeMethodHandle).ToTypeReference(module);
-            Boolean = typeof(bool).ToTypeReference(module);
+            Environment = module.ImportReference(typeof(Environment));
+            IntPtr = module.ImportReference(typeof(IntPtr));
+            Int32 = module.ImportReference(typeof(int));
+            RuntimeMethodHandle = module.ImportReference(typeof(RuntimeMethodHandle));
+            Boolean = module.ImportReference(typeof(bool));
         }
     }
 
@@ -46,7 +39,7 @@ namespace InterfaceBaseInvoke.Fody.Processing
 
         public MethodReferences(ModuleDefinition module, TypeReferences types)
         {
-            FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(module, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr, Array.Empty<TypeReference>()).Build();
+            FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(module, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr, Enumerable.Empty<TypeReference>()).Build();
             ToInt32 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt32)).Build();
             ToInt64 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt64)).Build();
             Is64BitProcess = MethodRefBuilder.PropertyGet(module, types.Environment, nameof(Environment.Is64BitProcess)).Build();

@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" />
     <ProjectReference Include="..\InterfaceBaseInvoke\InterfaceBaseInvoke.csproj" />
   </ItemGroup>
 

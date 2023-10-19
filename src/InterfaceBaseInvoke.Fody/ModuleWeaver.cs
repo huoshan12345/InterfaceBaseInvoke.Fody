@@ -1,21 +1,12 @@
-﻿using Fody;
-using InterfaceBaseInvoke.Fody.Processing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using InterfaceBaseInvoke.Fody.Support;
-using Mono.Cecil.Cil;
-
-namespace InterfaceBaseInvoke.Fody
+﻿namespace InterfaceBaseInvoke.Fody
 {
     public class ModuleWeaver : BaseModuleWeaver
     {
-        private readonly Logger _log;
+        private readonly IWeaverLogger _log;
 
         public ModuleWeaver()
         {
-            _log = new Logger(this);
+            _log = new WeaverLogger(this);
         }
 
         public override void Execute()
@@ -24,12 +15,13 @@ namespace InterfaceBaseInvoke.Fody
             {
                 foreach (var method in type.Methods)
                 {
+                    if (ModuleDefinition.IsAssemblyReferenced(method, WeaverAnchors.AssemblyName) == false)
+                        continue;
+
+                    _log.Debug($"Processing: {method.FullName}");
+
                     try
                     {
-                        if (!MethodWeaver.NeedsProcessing(ModuleDefinition, method))
-                            continue;
-
-                        _log.Debug($"Processing: {method.FullName}");
                         new MethodWeaver(ModuleDefinition, method, _log).Process();
                     }
                     catch (WeavingException ex)

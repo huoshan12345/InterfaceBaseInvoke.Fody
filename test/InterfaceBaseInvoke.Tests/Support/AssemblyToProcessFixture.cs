@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Fody;
-using InterfaceBaseInvoke.Fody;
-using InterfaceBaseInvoke.Fody.Extensions;
-using InterfaceBaseInvoke.Tests.AssemblyToProcess;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
+﻿using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
 #pragma warning disable 618
 

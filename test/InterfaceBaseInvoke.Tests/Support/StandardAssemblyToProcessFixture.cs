@@ -1,6 +1,4 @@
-using Fody;
 using InterfaceBaseInvoke.Tests.StandardAssemblyToProcess;
-using Mono.Cecil;
 
 namespace InterfaceBaseInvoke.Tests.Support
 {

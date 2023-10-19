@@ -1,9 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
-using Fody;
-using InterfaceBaseInvoke.Fody;
 using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
-using Mono.Cecil;
 
 namespace InterfaceBaseInvoke.Tests.Support
 {
