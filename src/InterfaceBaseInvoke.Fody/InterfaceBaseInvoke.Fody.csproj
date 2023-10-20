@@ -8,6 +8,9 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MoreFodyHelpers" Version="0.0.5" />
+    <PackageReference Include="MoreFodyHelpers" Version="0.0.5" GeneratePathProperty="true" />
+    <None Include="$(PkgMoreFodyHelpers)\lib\$(TargetFramework)\MoreFodyHelpers.dll" Visible="false">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

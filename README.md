@@ -4,7 +4,7 @@
 [![NuGet package](https://img.shields.io/nuget/v/InterfaceBaseInvoke.Fody.svg?logo=NuGet)](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody)
 [![.net](https://img.shields.io/badge/.net%20standard-2.1-ff69b4.svg?)](https://www.microsoft.com/net/download)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/master/LICENSE)  
-![Icon](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/raw/master/icon.png)
+![Icon](https://raw.githubusercontent.com/huoshan12345/InterfaceBaseInvoke.Fody/master/icon.png)
 
 This is an add-in for [Fody](https://github.com/Fody/Fody) which contains a workaround for `Interface Default Implementation Base Invocation`.  
 The feature has not been implemented by C# team yet.  
