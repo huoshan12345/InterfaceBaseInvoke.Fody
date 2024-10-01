@@ -29,7 +29,7 @@ public interface IGenericHasEmptyGenericMethod<in T>
     string Method<TParameter>(T x, TParameter y);
 }
 
-public interface IGenericHasOverridedGenericMethod<in T> : IGenericHasEmptyGenericMethod<T>
+public interface IGenericHasOverrideGenericMethod<in T> : IGenericHasEmptyGenericMethod<T>
 {
     string IGenericHasEmptyGenericMethod<T>.Method(int x, string y) => $"{nameof(Method)}({x}, {y})";
     string IGenericHasEmptyGenericMethod<T>.Method(T x, string y) => $"{nameof(Method)}({typeof(T).Name} {x}, {y})";
@@ -38,7 +38,7 @@ public interface IGenericHasOverridedGenericMethod<in T> : IGenericHasEmptyGener
     string IGenericHasEmptyGenericMethod<T>.Method<TParameter>(T x, TParameter y) => $"{nameof(Method)}<{typeof(TParameter).Name}>({typeof(T).Name} {x}, {typeof(TParameter).Name} {y})";
 }
 
-public class GenericHasOverridedGenericMethod<T> : IGenericHasOverridedGenericMethod<T>
+public class GenericHasOverrideGenericMethod<T> : IGenericHasOverrideGenericMethod<T>
 {
     string IGenericHasEmptyGenericMethod<T>.Method(int x, string y) => throw new InvalidOperationException();
     string IGenericHasEmptyGenericMethod<T>.Method(T x, string y) => throw new InvalidOperationException();

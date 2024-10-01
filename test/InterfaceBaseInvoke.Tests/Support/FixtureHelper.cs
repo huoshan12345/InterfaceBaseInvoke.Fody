@@ -9,16 +9,16 @@ namespace InterfaceBaseInvoke.Tests.Support
         public static string IsolateAssembly<T>()
         {
             var assembly = typeof(T).Assembly;
-            var assemblyPath = assembly.Location!;
+            var assemblyPath = assembly.Location;
             var assemblyDir = Path.GetDirectoryName(assemblyPath)!;
             var rootTestDir = Path.Combine(assemblyDir, "WeavingTest");
-            var asmTestDir = Path.Combine(rootTestDir, Path.GetFileNameWithoutExtension(assemblyPath)!);
+            var asmTestDir = Path.Combine(rootTestDir, Path.GetFileNameWithoutExtension(assemblyPath));
 
             EmptyDirectory(asmTestDir);
             Directory.CreateDirectory(asmTestDir);
 
             var destFile = CopyFile(assemblyPath, asmTestDir);
-            CopyFile(Path.ChangeExtension(assemblyPath, ".pdb")!, asmTestDir);
+            CopyFile(Path.ChangeExtension(assemblyPath, ".pdb"), asmTestDir);
             CopyFile(Path.Combine(assemblyDir, "InterfaceBaseInvoke.dll"), asmTestDir);
 
             return destFile;

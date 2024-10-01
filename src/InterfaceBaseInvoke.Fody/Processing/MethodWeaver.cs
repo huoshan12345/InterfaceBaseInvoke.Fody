@@ -22,11 +22,11 @@ internal sealed class MethodWeaver
         _references = new References(module);
     }
 
-    public void Process()
+    public bool Process()
     {
         try
         {
-            ProcessImpl();
+            return ProcessImpl();
         }
         catch (InstructionWeavingException ex)
         {
@@ -62,8 +62,9 @@ internal sealed class MethodWeaver
                };
     }
 
-    private void ProcessImpl()
+    private bool ProcessImpl()
     {
+        var processed = false;
         var instruction = Instructions.FirstOrDefault();
         Instruction? nextInstruction;
 
@@ -77,6 +78,7 @@ internal sealed class MethodWeaver
             try
             {
                 nextInstruction = ProcessAnchorMethod(instruction);
+                processed = true;
             }
             catch (InstructionWeavingException)
             {
@@ -91,6 +93,7 @@ internal sealed class MethodWeaver
                 throw new InstructionWeavingException(instruction, $"Unexpected error occured while processing method {_method.FullName} at instruction {instruction}: {ex}");
             }
         }
+        return processed;
     }
 
     private Instruction? ProcessAnchorMethod(Instruction instruction)

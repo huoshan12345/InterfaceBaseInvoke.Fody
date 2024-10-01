@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace InterfaceBaseInvoke.Tests.Support
+﻿namespace InterfaceBaseInvoke.Tests.Support
 {
     internal static class AssertionExtensions
     {

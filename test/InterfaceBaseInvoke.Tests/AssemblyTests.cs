@@ -2,7 +2,6 @@
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using InterfaceBaseInvoke.Tests.Support;
-using Xunit;
 
 namespace InterfaceBaseInvoke.Tests
 {

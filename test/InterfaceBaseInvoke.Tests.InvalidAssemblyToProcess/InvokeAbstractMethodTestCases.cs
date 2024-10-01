@@ -10,7 +10,7 @@ namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
             public string Method(int x, string y) => throw new InvalidOperationException();
         }
 
-        private class InheritIOverridedMethod : IHasOverridedMethod
+        private class InheritIOverrideMethod : IHasOverrideMethod
         {
             public string Method(int x, string y) => throw new InvalidOperationException();
         }
@@ -23,7 +23,7 @@ namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
 
         public string EmptyMethod_Invoke_MultiLevel()
         {
-            var obj = new InheritIOverridedMethod();
+            var obj = new InheritIOverrideMethod();
             return obj.Base<IHasEmptyMethod>().Method(0, string.Empty);
         }
     }

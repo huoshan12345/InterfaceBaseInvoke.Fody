@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
 using InterfaceBaseInvoke.Tests.Support;
-using Xunit;
 
 namespace InterfaceBaseInvoke.Tests.Weaving
 {
