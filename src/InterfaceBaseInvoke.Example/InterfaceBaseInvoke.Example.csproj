@@ -26,9 +26,9 @@
     <Error Text="No weaver found at @(WeaverFiles)." Condition="!Exists(@(WeaverFiles))" />
   </Target>
 
-  <Target Name="CheckExecutedWeavers" AfterTargets="AfterCompile" Condition="!Exists(@(FodyExecutedWeavers))">
-    <Delete Files="@(IntermediateAssembly)" /><!--force to rebuild this project next time when it is not weaved.-->>
+  <!--<Target Name="CheckExecutedWeavers" AfterTargets="AfterCompile" Condition="!Exists(@(FodyExecutedWeavers))">
+    <Delete Files="@(IntermediateAssembly)" /> --><!--force to rebuild this project next time when it is not weaved.--><!--
     <Error Text="No executed weaver found." />
-  </Target>
+  </Target>-->
 
 </Project>

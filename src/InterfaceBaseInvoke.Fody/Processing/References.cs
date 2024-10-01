@@ -5,10 +5,10 @@ public sealed class References
     public TypeReferences Types { get; }
     public MethodReferences Methods { get; }
 
-    public References(ModuleDefinition module)
+    public References(ModuleWeavingContext context)
     {
-        Types = new TypeReferences(module);
-        Methods = new MethodReferences(module, Types);
+        Types = new TypeReferences(context.Module);
+        Methods = new MethodReferences(context, Types);
     }
 }
 
@@ -37,11 +37,11 @@ public sealed class MethodReferences
     public MethodReference ToInt64 { get; }
     public MethodReference Is64BitProcess { get; }
 
-    public MethodReferences(ModuleDefinition module, TypeReferences types)
+    public MethodReferences(ModuleWeavingContext context, TypeReferences types)
     {
-        FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(module, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr, []).Build();
-        ToInt32 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt32)).Build();
-        ToInt64 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt64)).Build();
-        Is64BitProcess = MethodRefBuilder.PropertyGet(module, types.Environment, nameof(Environment.Is64BitProcess)).Build();
+        FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(context, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr.ToTypeRefBuilder(context), []).Build();
+        ToInt32 = MethodRefBuilder.MethodByName(context, types.IntPtr, nameof(IntPtr.ToInt32)).Build();
+        ToInt64 = MethodRefBuilder.MethodByName(context, types.IntPtr, nameof(IntPtr.ToInt64)).Build();
+        Is64BitProcess = MethodRefBuilder.PropertyGet(context, types.Environment, nameof(Environment.Is64BitProcess)).Build();
     }
 }

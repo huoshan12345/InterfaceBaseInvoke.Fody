@@ -11,6 +11,8 @@ public class ModuleWeaver : BaseModuleWeaver
 
     public override void Execute()
     {
+        using var context = new ModuleWeavingContext(ModuleDefinition, ProjectDirectoryPath);
+
         var processed = false;
         foreach (var type in ModuleDefinition.GetTypes())
         {
@@ -23,7 +25,7 @@ public class ModuleWeaver : BaseModuleWeaver
 
                 try
                 {
-                    processed = new MethodWeaver(ModuleDefinition, method, _log).Process() || processed;
+                    processed = new MethodWeaver(context, method, _log).Process() || processed;
                 }
                 catch (WeavingException ex)
                 {
