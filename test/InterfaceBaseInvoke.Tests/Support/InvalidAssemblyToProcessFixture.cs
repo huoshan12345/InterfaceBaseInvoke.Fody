@@ -14,7 +14,7 @@ namespace InterfaceBaseInvoke.Tests.Support
 
         static InvalidAssemblyToProcessFixture()
         {
-            var weavingTask = new ModuleWeaver();
+            var weavingTask = new GuardedWeaver();
             TestResult = weavingTask.ExecuteTestRun(
                 FixtureHelper.IsolateAssembly<InvalidAssemblyToProcessReference>(),
                 false,
@@ -25,7 +25,7 @@ namespace InterfaceBaseInvoke.Tests.Support
 
             ResultModule = ModuleDefinition.ReadModule(TestResult.AssemblyPath, new ReaderParameters(ReadingMode.Immediate)
             {
-                AssemblyResolver = assemblyResolver
+                AssemblyResolver = assemblyResolver,
             });
 
             var typeName = TestResult.Assembly.GetName().Name + "." + nameof(InvalidAssemblyToProcessReference);

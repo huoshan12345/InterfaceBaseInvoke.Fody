@@ -23,25 +23,25 @@ public interface IHasEmptyMethod
     string Method(int x, string y);
 }
 
-public interface IHasOverridedMethod : IHasEmptyMethod
+public interface IHasOverrideMethod : IHasEmptyMethod
 {
     string IHasEmptyMethod.Property => $"{nameof(Property)}";
     string IHasEmptyMethod.Method(int x, string y) => $"{nameof(Method)}({x}, {y})";
 }
 
-public class HasOverridedMethod : IHasOverridedMethod
+public class HasOverrideMethod : IHasOverrideMethod
 {
     public string Property => throw new InvalidOperationException();
     public string Method(int x, string y) => throw new InvalidOperationException();
 }
 
-public interface IHasReoverridedMethod : IHasOverridedMethod
+public interface IHasReOverrideMethod : IHasOverrideMethod
 {
-    string IHasEmptyMethod.Property => $"{nameof(IHasReoverridedMethod)}.{nameof(Property)}";
-    string IHasEmptyMethod.Method(int x, string y) => $"{nameof(IHasReoverridedMethod)}.{nameof(Method)}({x}, {y})";
+    string IHasEmptyMethod.Property => $"{nameof(IHasReOverrideMethod)}.{nameof(Property)}";
+    string IHasEmptyMethod.Method(int x, string y) => $"{nameof(IHasReOverrideMethod)}.{nameof(Method)}({x}, {y})";
 }
 
-public class HasReoverridedMethod : IHasReoverridedMethod
+public class HasReOverrideMethod : IHasReOverrideMethod
 {
     public string Property => throw new InvalidOperationException();
     public string Method(int x, string y) => throw new InvalidOperationException();

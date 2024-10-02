@@ -4,35 +4,36 @@ namespace InterfaceBaseInvoke.Fody.Processing;
 
 internal sealed class MethodWeaver
 {
-    private readonly ModuleDefinition _module;
     private readonly MethodDefinition _method;
     private readonly MethodWeaverLogger _log;
     private readonly WeaverILProcessor _il;
     private readonly References _references;
+    private readonly SequencePointMapper _sequencePoints;
+
     private Collection<Instruction> Instructions => _method.Body.Instructions;
     private TypeReferences Types => _references.Types;
     private MethodReferences Methods => _references.Methods;
 
-    public MethodWeaver(ModuleDefinition module, MethodDefinition method, IWeaverLogger log)
+    public MethodWeaver(ModuleWeavingContext context, MethodDefinition method, IWeaverLogger log)
     {
-        _module = module;
         _method = method;
         _il = new WeaverILProcessor(method);
         _log = new MethodWeaverLogger(log, _method);
-        _references = new References(module);
+        _references = new References(context);
+        _sequencePoints = new SequencePointMapper(method, true);
     }
 
-    public void Process()
+    public bool Process()
     {
         try
         {
-            ProcessImpl();
+            return ProcessImpl();
         }
         catch (InstructionWeavingException ex)
         {
             throw new WeavingException(_log.QualifyMessage(ex.Message, ex.Instruction))
             {
-                SequencePoint = ex.Instruction.GetInputSequencePoint(_method)
+                SequencePoint = _sequencePoints.GetInputSequencePoint(ex.Instruction)
             };
         }
         catch (WeavingException ex)
@@ -62,8 +63,9 @@ internal sealed class MethodWeaver
                };
     }
 
-    private void ProcessImpl()
+    private bool ProcessImpl()
     {
+        var processed = false;
         var instruction = Instructions.FirstOrDefault();
         Instruction? nextInstruction;
 
@@ -77,6 +79,7 @@ internal sealed class MethodWeaver
             try
             {
                 nextInstruction = ProcessAnchorMethod(instruction);
+                processed = true;
             }
             catch (InstructionWeavingException)
             {
@@ -91,6 +94,7 @@ internal sealed class MethodWeaver
                 throw new InstructionWeavingException(instruction, $"Unexpected error occured while processing method {_method.FullName} at instruction {instruction}: {ex}");
             }
         }
+        return processed;
     }
 
     private Instruction? ProcessAnchorMethod(Instruction instruction)

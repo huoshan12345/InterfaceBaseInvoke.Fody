@@ -1,40 +1,52 @@
-﻿namespace InterfaceBaseInvoke.Fody
+﻿namespace InterfaceBaseInvoke.Fody;
+
+public class ModuleWeaver : BaseModuleWeaver
 {
-    public class ModuleWeaver : BaseModuleWeaver
+    private readonly IWeaverLogger _log;
+
+    public ModuleWeaver()
     {
-        private readonly IWeaverLogger _log;
+        _log = new WeaverLogger(this);
+    }
 
-        public ModuleWeaver()
-        {
-            _log = new WeaverLogger(this);
-        }
+    public override void Execute()
+    {
+        using var context = new ModuleWeavingContext(ModuleDefinition, WeaverAnchors.AssemblyName, ProjectDirectoryPath);
 
-        public override void Execute()
+        var processed = false;
+        foreach (var type in ModuleDefinition.GetTypes())
         {
-            foreach (var type in ModuleDefinition.GetTypes())
+            foreach (var method in type.Methods)
             {
-                foreach (var method in type.Methods)
+                if (method.HasBody == false)
+                    continue;
+
+                _log.Debug($"Processing: {method.FullName}");
+
+                try
                 {
-                    if (ModuleDefinition.IsAssemblyReferenced(method, WeaverAnchors.AssemblyName) == false)
-                        continue;
-
-                    _log.Debug($"Processing: {method.FullName}");
-
-                    try
-                    {
-                        new MethodWeaver(ModuleDefinition, method, _log).Process();
-                    }
-                    catch (WeavingException ex)
-                    {
-                        AddError(ex.Message, ex.SequencePoint);
-                    }
+                    processed = new MethodWeaver(context, method, _log).Process() || processed;
+                }
+                catch (WeavingException ex)
+                {
+                    var terminate = AddError(ex.ToString(), ex.SequencePoint);
+                    if (terminate)
+                        return;
                 }
             }
         }
 
-        public override IEnumerable<string> GetAssembliesForScanning() => Enumerable.Empty<string>();
+        if (processed == false)
+        {
+            _log.Warning("No type is processed.", null);
+        }
+    }
 
-        protected virtual void AddError(string message, SequencePoint? sequencePoint)
-            => _log.Error(message, sequencePoint);
+    public override IEnumerable<string> GetAssembliesForScanning() => [];
+
+    protected virtual bool AddError(string message, SequencePoint? sequencePoint)
+    {
+        _log.Error(message, sequencePoint);
+        return true;
     }
 }

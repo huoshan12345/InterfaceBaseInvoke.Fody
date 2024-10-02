@@ -12,3 +12,4 @@ global using MoreFodyHelpers;
 global using MoreFodyHelpers.Building;
 global using MoreFodyHelpers.Extensions;
 global using MoreFodyHelpers.Processing;
+global using MoreFodyHelpers.Support;

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using Xunit;
 
 namespace InterfaceBaseInvoke.Tests.Support
 {

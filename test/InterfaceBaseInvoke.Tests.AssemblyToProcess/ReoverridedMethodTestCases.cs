@@ -1,22 +1,22 @@
 ﻿namespace InterfaceBaseInvoke.Tests.AssemblyToProcess;
 
-public class ReoverridedMethodTestCases
+public class ReOverrideMethodTestCases
 {
     [Fact]
     public void Property_InvokeTwice()
     {
-        var obj = new HasReoverridedMethod();
-        var result = obj.Base<IHasOverridedMethod>().Property + "----" + obj.Base<IHasReoverridedMethod>().Property;
-        Assert.Equal("Property----IHasReoverridedMethod.Property", result);
+        var obj = new HasReOverrideMethod();
+        var result = obj.Base<IHasOverrideMethod>().Property + "----" + obj.Base<IHasReOverrideMethod>().Property;
+        Assert.Equal("Property----IHasReOverrideMethod.Property", result);
     }
 
     [Fact]
-    public void ReoverrideMethod_InvokeTwice()
+    public void ReOverrideMethod_InvokeTwice()
     {
-        var obj = new HasReoverridedMethod();
-        var a = obj.Base<IHasOverridedMethod>().Method(1, "a");
-        var b = obj.Base<IHasReoverridedMethod>().Method(2, "b");
+        var obj = new HasReOverrideMethod();
+        var a = obj.Base<IHasOverrideMethod>().Method(1, "a");
+        var b = obj.Base<IHasReOverrideMethod>().Method(2, "b");
         var result = a + "----" + b;
-        Assert.Equal("Method(1, a)----IHasReoverridedMethod.Method(2, b)", result);
+        Assert.Equal("Method(1, a)----IHasReOverrideMethod.Method(2, b)", result);
     }
 }

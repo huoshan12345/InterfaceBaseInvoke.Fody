@@ -18,13 +18,13 @@ public interface IHasEmptyGenericMethod
     string Method<T>(int x, string y);
 }
 
-public interface IHasOverridedGenericMethod : IHasEmptyGenericMethod
+public interface IHasOverrideGenericMethod : IHasEmptyGenericMethod
 {
     string IHasEmptyGenericMethod.Method(int x, string y) => $"{nameof(Method)}({x}, {y})";
     string IHasEmptyGenericMethod.Method<T>(int x, string y) => $"{nameof(Method)}<{typeof(T).Name}>({x}, {y})";
 }
 
-public class HasOverridedGenericMethod : IHasOverridedGenericMethod
+public class HasOverrideGenericMethod : IHasOverrideGenericMethod
 {
     public string Method(int x, string y) => throw new InvalidOperationException();
     public string Method<T>(int x, string y) => throw new InvalidOperationException();

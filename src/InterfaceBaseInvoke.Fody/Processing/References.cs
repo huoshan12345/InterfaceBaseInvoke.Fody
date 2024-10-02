@@ -1,48 +1,47 @@
-﻿namespace InterfaceBaseInvoke.Fody.Processing
+﻿namespace InterfaceBaseInvoke.Fody.Processing;
+
+public sealed class References
 {
-    public sealed class References
-    {
-        public TypeReferences Types { get; }
-        public MethodReferences Methods { get; }
+    public TypeReferences Types { get; }
+    public MethodReferences Methods { get; }
 
-        public References(ModuleDefinition module)
-        {
-            Types = new TypeReferences(module);
-            Methods = new MethodReferences(module, Types);
-        }
+    public References(ModuleWeavingContext context)
+    {
+        Types = new TypeReferences(context);
+        Methods = new MethodReferences(context, Types);
     }
+}
 
-    public sealed class TypeReferences
+public sealed class TypeReferences
+{
+    public TypeReference RuntimeMethodHandle { get; }
+    public TypeReference IntPtr { get; }
+    public TypeReference Int32 { get; }
+    public TypeReference Environment { get; }
+    public TypeReference Boolean { get; }
+
+    public TypeReferences(ModuleWeavingContext context)
     {
-        public TypeReference RuntimeMethodHandle { get; }
-        public TypeReference IntPtr { get; }
-        public TypeReference Int32 { get; }
-        public TypeReference Environment { get; }
-        public TypeReference Boolean { get; }
-
-        public TypeReferences(ModuleDefinition module)
-        {
-            Environment = module.ImportReference(typeof(Environment));
-            IntPtr = module.ImportReference(typeof(IntPtr));
-            Int32 = module.ImportReference(typeof(int));
-            RuntimeMethodHandle = module.ImportReference(typeof(RuntimeMethodHandle));
-            Boolean = module.ImportReference(typeof(bool));
-        }
+        Environment = context.ImportReference(typeof(Environment));
+        IntPtr = context.ImportReference(typeof(IntPtr));
+        Int32 = context.ImportReference(typeof(int));
+        RuntimeMethodHandle = context.ImportReference(typeof(RuntimeMethodHandle));
+        Boolean = context.ImportReference(typeof(bool));
     }
+}
 
-    public sealed class MethodReferences
+public sealed class MethodReferences
+{
+    public MethodReference FunctionPointer { get; }
+    public MethodReference ToInt32 { get; }
+    public MethodReference ToInt64 { get; }
+    public MethodReference Is64BitProcess { get; }
+
+    public MethodReferences(ModuleWeavingContext context, TypeReferences types)
     {
-        public MethodReference FunctionPointer { get; }
-        public MethodReference ToInt32 { get; }
-        public MethodReference ToInt64 { get; }
-        public MethodReference Is64BitProcess { get; }
-
-        public MethodReferences(ModuleDefinition module, TypeReferences types)
-        {
-            FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(module, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr, Enumerable.Empty<TypeReference>()).Build();
-            ToInt32 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt32)).Build();
-            ToInt64 = MethodRefBuilder.MethodByName(module, types.IntPtr, nameof(IntPtr.ToInt64)).Build();
-            Is64BitProcess = MethodRefBuilder.PropertyGet(module, types.Environment, nameof(Environment.Is64BitProcess)).Build();
-        }
+        FunctionPointer = MethodRefBuilder.MethodByNameAndSignature(context, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr.ToTypeRefBuilder(context), []).Build();
+        ToInt32 = MethodRefBuilder.MethodByName(context, types.IntPtr, nameof(IntPtr.ToInt32)).Build();
+        ToInt64 = MethodRefBuilder.MethodByName(context, types.IntPtr, nameof(IntPtr.ToInt64)).Build();
+        Is64BitProcess = MethodRefBuilder.PropertyGet(context, types.Environment, nameof(Environment.Is64BitProcess)).Build();
     }
 }

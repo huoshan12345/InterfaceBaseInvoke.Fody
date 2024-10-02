@@ -9,8 +9,8 @@
     <PackageId>InterfaceBaseInvoke.Fody</PackageId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.8.0" PrivateAssets="none" />
-    <PackageReference Include="FodyPackaging" Version="6.8.0" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="6.8.2" PrivateAssets="none" />
+    <PackageReference Include="FodyPackaging" Version="6.8.2" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,5 +18,4 @@
   </ItemGroup>
 
   <Import Project="..\MoreFodyHelpers.props" />
-
 </Project>
