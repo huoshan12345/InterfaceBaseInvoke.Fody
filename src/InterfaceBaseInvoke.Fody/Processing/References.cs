@@ -7,7 +7,7 @@ public sealed class References
 
     public References(ModuleWeavingContext context)
     {
-        Types = new TypeReferences(context.Module);
+        Types = new TypeReferences(context);
         Methods = new MethodReferences(context, Types);
     }
 }
@@ -20,13 +20,13 @@ public sealed class TypeReferences
     public TypeReference Environment { get; }
     public TypeReference Boolean { get; }
 
-    public TypeReferences(ModuleDefinition module)
+    public TypeReferences(ModuleWeavingContext context)
     {
-        Environment = module.ImportReference(typeof(Environment));
-        IntPtr = module.ImportReference(typeof(IntPtr));
-        Int32 = module.ImportReference(typeof(int));
-        RuntimeMethodHandle = module.ImportReference(typeof(RuntimeMethodHandle));
-        Boolean = module.ImportReference(typeof(bool));
+        Environment = context.ImportReference(typeof(Environment));
+        IntPtr = context.ImportReference(typeof(IntPtr));
+        Int32 = context.ImportReference(typeof(int));
+        RuntimeMethodHandle = context.ImportReference(typeof(RuntimeMethodHandle));
+        Boolean = context.ImportReference(typeof(bool));
     }
 }
 
