@@ -52,32 +52,4 @@ public static class AssemblyToProcessFixture
         // This reference is added by Fody, it's not supposed to be there
         module.AssemblyReferences.RemoveWhere(i => string.Equals(i.Name, "System.Private.CoreLib", StringComparison.OrdinalIgnoreCase));
     }
-
-    internal class GuardedWeaver : ModuleWeaver
-    {
-        private readonly List<string> _errors = [];
-
-        public override void Execute()
-        {
-            try
-            {
-                base.Execute();
-            }
-            catch (Exception ex)
-            {
-                var str = new StringBuilder();
-                foreach (var error in _errors)
-                    str.AppendLine(error);
-
-                str.AppendLine(ex.Message);
-                throw new InvalidOperationException(str.ToString());
-            }
-        }
-
-        protected override void AddError(string message, SequencePoint? sequencePoint)
-        {
-            _errors.Add(message);
-            base.AddError(message, sequencePoint);
-        }
-    }
 }

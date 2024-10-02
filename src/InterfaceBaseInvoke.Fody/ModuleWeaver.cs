@@ -29,7 +29,9 @@ public class ModuleWeaver : BaseModuleWeaver
                 }
                 catch (WeavingException ex)
                 {
-                    AddError(ex.ToString(), ex.SequencePoint);
+                    var terminate = AddError(ex.ToString(), ex.SequencePoint);
+                    if (terminate)
+                        return;
                 }
             }
         }
@@ -42,6 +44,9 @@ public class ModuleWeaver : BaseModuleWeaver
 
     public override IEnumerable<string> GetAssembliesForScanning() => [];
 
-    protected virtual void AddError(string message, SequencePoint? sequencePoint)
-        => _log.Error(message, sequencePoint);
+    protected virtual bool AddError(string message, SequencePoint? sequencePoint)
+    {
+        _log.Error(message, sequencePoint);
+        return true;
+    }
 }
