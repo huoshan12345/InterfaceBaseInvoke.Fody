@@ -54,7 +54,6 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var handler = typeof(RuntimeMethodHandle);
         var service = new Service();
         service.Invoke();
         Console.Read();

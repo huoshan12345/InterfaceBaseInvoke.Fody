@@ -7,7 +7,6 @@
     <IsPackable>true</IsPackable>
     <DebugType>embedded</DebugType>
     <PackageId>InterfaceBaseInvoke.Fody</PackageId>
-    <WeaverDirPath>..\$(PackageId)\bin\$(Configuration)</WeaverDirPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Fody" Version="6.8.2" PrivateAssets="none" />
