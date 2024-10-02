@@ -1,6 +1,9 @@
-﻿using InterfaceBaseInvoke.Tests.Support;
-using Xunit.Abstractions;
-#pragma warning disable CS0618 // Type or member is obsolete
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+
+using System.IO;
+using System.Linq;
+using InterfaceBaseInvoke.Fody.Processing;
+using MoreFodyHelpers.Processing;
 
 namespace InterfaceBaseInvoke.Tests.Weaving;
 
@@ -31,6 +34,24 @@ public class ModuleWeaverTests
                 LogErrorPoint = (m, p) => throw new InvalidOperationException(m),
             };
             wearer.Execute();
+        }
+    }
+
+    [Fact]
+    public void IsWeaverReferenced_Test()
+    {
+        var modules = new[]
+        {
+            AssemblyToProcessFixture.OriginalModule,
+            StandardAssemblyToProcessFixture.OriginalModule,
+        };
+        foreach (var module in modules)
+        {
+            using var context = module.CreateWeavingContext();
+            foreach (var type in module.GetTypes().Where(m => m.Name.EndsWith("TestCases")))
+            {
+                Assert.True(type.IsWeaverReferencedDeep(context));
+            }
         }
     }
 }

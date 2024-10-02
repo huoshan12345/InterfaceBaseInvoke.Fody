@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using InterfaceBaseInvoke.Tests.AssemblyToProcess;
 using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
-using InterfaceBaseInvoke.Tests.Support;
 
 namespace InterfaceBaseInvoke.Tests.Weaving
 {

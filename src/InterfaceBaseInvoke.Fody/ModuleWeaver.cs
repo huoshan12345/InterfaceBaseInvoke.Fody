@@ -11,14 +11,14 @@ public class ModuleWeaver : BaseModuleWeaver
 
     public override void Execute()
     {
-        using var context = new ModuleWeavingContext(ModuleDefinition, ProjectDirectoryPath);
+        using var context = new ModuleWeavingContext(ModuleDefinition, WeaverAnchors.AssemblyName, ProjectDirectoryPath);
 
         var processed = false;
         foreach (var type in ModuleDefinition.GetTypes())
         {
             foreach (var method in type.Methods)
             {
-                if (ModuleDefinition.IsAssemblyReferenced(method, WeaverAnchors.AssemblyName) == false)
+                if (method.HasBody == false)
                     continue;
 
                 _log.Debug($"Processing: {method.FullName}");

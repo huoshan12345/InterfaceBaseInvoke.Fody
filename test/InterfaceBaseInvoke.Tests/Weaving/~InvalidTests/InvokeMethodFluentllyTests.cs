@@ -1,5 +1,4 @@
 ﻿using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
-using InterfaceBaseInvoke.Tests.Support;
 
 namespace InterfaceBaseInvoke.Tests.Weaving
 {

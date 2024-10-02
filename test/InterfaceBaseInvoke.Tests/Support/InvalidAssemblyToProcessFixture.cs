@@ -25,7 +25,7 @@ namespace InterfaceBaseInvoke.Tests.Support
 
             ResultModule = ModuleDefinition.ReadModule(TestResult.AssemblyPath, new ReaderParameters(ReadingMode.Immediate)
             {
-                AssemblyResolver = assemblyResolver
+                AssemblyResolver = assemblyResolver,
             });
 
             var typeName = TestResult.Assembly.GetName().Name + "." + nameof(InvalidAssemblyToProcessReference);

@@ -16,6 +16,8 @@ internal sealed class MethodWeaver
 
     public MethodWeaver(ModuleWeavingContext context, MethodDefinition method, IWeaverLogger log)
     {
+
+        
         _method = method;
         _il = new WeaverILProcessor(method);
         _log = new MethodWeaverLogger(log, _method);
