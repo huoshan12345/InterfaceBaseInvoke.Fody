@@ -33,10 +33,16 @@ jobs:
         run: dotnet restore ${{ env.SOLUTION }} -v q
 
       - name: Test Debug
-        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug -r x86
+
+      - name: Test Debug
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug -r x64
 
       - name: Test Release
-        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release -r x86
+
+      - name: Test Release
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release -r x64
 
       - name: NuGet Publish
         if: ${{ github.ref == 'refs/heads/master' }}
