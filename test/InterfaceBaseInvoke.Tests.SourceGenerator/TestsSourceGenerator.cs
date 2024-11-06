@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using InterfaceBaseInvoke.Tests.SourceGenerator.Sources;
 using Microsoft.CodeAnalysis;
@@ -11,44 +7,45 @@ using Microsoft.CodeAnalysis;
 namespace InterfaceBaseInvoke.Tests.SourceGenerator
 {
     [Generator]
-    public class TestsSourceGenerator : ISourceGenerator
+    public class TestsSourceGenerator : IIncrementalGenerator
     {
         public static readonly string[] Namespaces =
-        {
+        [
             "InterfaceBaseInvoke",
             "Tests",
-            "AssemblyToProcess"
-        };
+            "AssemblyToProcess",
+        ];
 
         public static readonly string AssemblyName = string.Join(".", Namespaces);
 
-        public void Execute(GeneratorExecutionContext context)
+        public static void Execute(SourceProductionContext context, Compilation compilation)
         {
             try
             {
-                ExecuteInternal(context);
+                ExecuteInternal(context, compilation);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                //This is temporary till https://github.com/dotnet/roslyn/issues/46084 is fixed
-                context.ReportDiagnostic(Diagnostic.Create(
-                                             new DiagnosticDescriptor(
-                                                 "SI0000",
-                                                 "An exception was thrown by the StrongInject generator",
-                                                 "An exception was thrown by the StrongInject generator: '{0}'",
-                                                 "StrongInject",
-                                                 DiagnosticSeverity.Error,
-                                                 isEnabledByDefault: true),
-                                             Location.None,
-                                             e.ToString()));
+                const string name = "InterfaceBaseInvoke.Tests";
+                var descriptor = new DiagnosticDescriptor(
+                    id: "IBIT001",
+                    title: $"An exception was thrown by the {name} generator",
+                    messageFormat: "An exception was thrown by the {0} generator: '{1}'",
+                    category: name,
+                    defaultSeverity: DiagnosticSeverity.Error,
+                    isEnabledByDefault: true);
+
+                context.ReportDiagnostic(Diagnostic.Create(descriptor: descriptor,
+                                                           location: Location.None,
+                                                           messageArgs: [name, ex.ToString()]));
             }
         }
 
         //By not inlining we make sure we can catch assembly loading errors when jitting this method
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ExecuteInternal(GeneratorExecutionContext context)
+        private static void ExecuteInternal(SourceProductionContext context, Compilation compilation)
         {
-            var assemblySymbol = context.Compilation.SourceModule.ReferencedAssemblySymbols.FirstOrDefault(q => q.Name == AssemblyName);
+            var assemblySymbol = compilation.SourceModule.ReferencedAssemblySymbols.FirstOrDefault(q => q.Name == AssemblyName);
             if (assemblySymbol == null)
                 throw new InvalidOperationException("Cannot find assembly symbol: " + AssemblyName);
 
@@ -67,15 +64,12 @@ namespace InterfaceBaseInvoke.Tests.SourceGenerator
             }
         }
 
-        public void Initialize(GeneratorInitializationContext context)
+        public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            //#if DEBUG
-            //            if (!Debugger.IsAttached)
-            //            {
-            //                Debugger.Launch();
-            //            }
-            //            Debug.WriteLine("Initalize code generator");
-            //#endif
+            //if (Debugger.IsAttached == false)
+            //    Debugger.Launch();
+
+            context.RegisterImplementationSourceOutput(context.CompilationProvider, Execute);
         }
     }
 }
