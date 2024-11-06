@@ -30,20 +30,17 @@ jobs:
             7.0.x
             8.0.x
 
-      - name: Restore
-        run: dotnet restore ${{ env.SOLUTION }} -v q
-
       - name: Test Debug x86
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Debug -r x86
+        run: dotnet test ${{ env.TEST_PATH }} -c Debug -r x86
 
       - name: Test Debug x64
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Debug -r x64
+        run: dotnet test ${{ env.TEST_PATH }} -c Debug -r x64
 
       - name: Test Release x86
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Release -r x86
+        run: dotnet test ${{ env.TEST_PATH }} -c Release -r x86
 
       - name: Test Release x64
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Release -r x64
+        run: dotnet test ${{ env.TEST_PATH }} -c Release -r x64
 
       - name: NuGet Publish
         if: ${{ github.ref == 'refs/heads/master' }}
