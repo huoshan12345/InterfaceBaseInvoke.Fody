@@ -161,6 +161,7 @@ internal sealed class MethodWeaver
         var interfaceDefaultMethod = interfaceTypeDef.GetInterfaceDefaultMethod(methodRef);
         EnsureNonAbstract(interfaceDefaultMethod);
 
+        // ReSharper disable once CanReplaceCastWithVariableType
         var interfaceDefaultMethodRef = (MethodReference)interfaceDefaultMethod;
         if (methodRef is GenericInstanceMethod { HasGenericArguments: true } genericInstanceMethod)
         {
@@ -170,11 +171,7 @@ internal sealed class MethodWeaver
         // we have to use Calli instead of Call to avoid MethodAccessException
         // we cannot use Ldftn to get the method pointer because of MethodAccessException
         var handle = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.RuntimeMethodHandle));
-        var ptr = _il.Locals.AddLocalVar(new LocalVarBuilder(Types.IntPtr));
         var callSite = new StandAloneMethodSigBuilder(CallingConventions.HasThis, interfaceDefaultMethodRef).Build();
-
-        var to64 = _il.Create(OpCodes.Call, Methods.ToInt64);
-        var to32 = _il.Create(OpCodes.Call, Methods.ToInt32);
         var calli = _il.Create(OpCodes.Calli, callSite);
 
         var instructions = new List<Instruction>
@@ -183,13 +180,6 @@ internal sealed class MethodWeaver
             _il.Create(OpCodes.Stloc, handle),
             _il.Create(OpCodes.Ldloca, handle),
             _il.Create(OpCodes.Call, Methods.FunctionPointer),
-            _il.Create(OpCodes.Stloc, ptr),
-            _il.Create(OpCodes.Ldloca, ptr),
-            _il.Create(OpCodes.Call, Methods.Is64BitProcess),
-            _il.Create(OpCodes.Brfalse, to32),
-            to64,
-            _il.Create(OpCodes.Br, calli),
-            to32,
             calli,
             Instruction.Create(OpCodes.Nop)
         };

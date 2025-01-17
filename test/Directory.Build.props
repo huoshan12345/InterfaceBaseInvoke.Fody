@@ -3,7 +3,7 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
-    <NoWarn>xUnit2013</NoWarn>
+    <NoWarn>xUnit2013;NETSDK1201;</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

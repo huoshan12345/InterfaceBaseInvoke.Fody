@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!--This project must target netstandard2.0.-->
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Nullable>enable</Nullable>
     <PackageId>$(MSBuildProjectName).Fody</PackageId>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
