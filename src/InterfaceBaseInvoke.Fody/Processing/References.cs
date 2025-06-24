@@ -12,13 +12,13 @@ public sealed class References
     }
 }
 
-public sealed class TypeReferences(ModuleWeavingContext Context)
+public sealed class TypeReferences(ModuleWeavingContext context)
 {
-    public TypeReference RuntimeMethodHandle { get; } = Context.ImportReference(typeof(RuntimeMethodHandle));
-    public TypeReference IntPtr { get; } = Context.ImportReference(typeof(IntPtr));
+    public TypeReference RuntimeMethodHandle { get; } = context.ImportReference(typeof(RuntimeMethodHandle));
+    public TypeReference IntPtr { get; } = context.ImportReference(typeof(IntPtr));
 }
 
-public sealed class MethodReferences(ModuleWeavingContext Context, TypeReferences Types)
+public sealed class MethodReferences(ModuleWeavingContext context, TypeReferences types)
 {
-    public MethodReference FunctionPointer { get; } = MethodRefBuilder.MethodByNameAndSignature(Context, Types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, Types.IntPtr.ToTypeRefBuilder(Context), []).Build();
+    public MethodReference FunctionPointer { get; } = MethodRefBuilder.MethodByNameAndSignature(context, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr.ToTypeRefBuilder(context), []).Build();
 }
