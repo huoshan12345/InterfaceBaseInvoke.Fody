@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/build/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path="build/incre_ver.ps1" />
+    <File Path="build/pack.ps1" />
+    <File Path="build/pkg.version" />
+    <File Path="NuGet.Config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/example/">
+    <Project Path="src/InterfaceBaseInvoke.Example/InterfaceBaseInvoke.Example.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/MoreFodyHelpers.props" />
+    <Project Path="src/InterfaceBaseInvoke.Fody/InterfaceBaseInvoke.Fody.csproj" />
+    <Project Path="src/InterfaceBaseInvoke/InterfaceBaseInvoke.csproj">
+      <BuildDependency Project="src/InterfaceBaseInvoke.Fody/InterfaceBaseInvoke.Fody.csproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/test/">
+    <File Path="test/Directory.Build.props" />
+    <Project Path="test/InterfaceBaseInvoke.Tests.AssemblyToProcess/InterfaceBaseInvoke.Tests.AssemblyToProcess.csproj" />
+    <Project Path="test/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess.csproj" />
+    <Project Path="test/InterfaceBaseInvoke.Tests.SourceGenerator/InterfaceBaseInvoke.Tests.SourceGenerator.csproj" />
+    <Project Path="test/InterfaceBaseInvoke.Tests.StandardAssemblyToProcess/InterfaceBaseInvoke.Tests.StandardAssemblyToProcess.csproj" />
+    <Project Path="test/InterfaceBaseInvoke.Tests/InterfaceBaseInvoke.Tests.csproj" />
+  </Folder>
+</Solution>
