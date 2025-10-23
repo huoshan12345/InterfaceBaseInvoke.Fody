@@ -2,7 +2,7 @@
 
 namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
 {
-    public class InvokeMethodFluentllyTestCases
+    public class InvokeMethodFluentlyTestCases
     {
         private class InheritIDefaultMethod : IHasDefaultMethod
         {
