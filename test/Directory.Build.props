@@ -12,7 +12,7 @@
   <PropertyGroup>
     <_RootDir>$(MSBuildThisFileDirectory)../</_RootDir>
     <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
-    <VSTestResultsDirectory>$(_RootDir)TestResults/$(Configuration)/$(TargetFramework)</VSTestResultsDirectory>
+    <VSTestResultsDirectory>$(_RootDir)TestResults/$(Configuration)/$(RuntimeIdentifier)/$(TargetFramework)</VSTestResultsDirectory>
   </PropertyGroup>
 
 </Project>
