@@ -3,8 +3,8 @@
 [![Build](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/actions/workflows/build.yml/badge.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/actions/workflows/build.yml)
 [![NuGet package](https://img.shields.io/nuget/v/InterfaceBaseInvoke.Fody.svg?logo=NuGet)](https://www.nuget.org/packages/InterfaceBaseInvoke.Fody)
 [![.net](https://img.shields.io/badge/.net%20standard-2.1-ff69b4.svg?)](https://www.microsoft.com/net/download)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/master/LICENSE)  
-![Icon](https://raw.githubusercontent.com/huoshan12345/InterfaceBaseInvoke.Fody/master/icon.png)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/blob/main/LICENSE)  
+![Icon](https://raw.githubusercontent.com/huoshan12345/InterfaceBaseInvoke.Fody/main/icon.png)
 
 This is an add-in for [Fody](https://github.com/Fody/Fody) which contains a workaround for `Interface Default Implementation Base Invocation`.  
 The feature has not been implemented by C# team yet.  
@@ -32,7 +32,7 @@ The status for it can be seen in https://github.com/dotnet/csharplang/issues/233
     <InterfaceBaseInvoke />
   </Weavers>
   ```
-See [Fody usage](https://github.com/Fody/Home/blob/master/pages/usage.md) for general guidelines, and [Fody Configuration](https://github.com/Fody/Home/blob/master/pages/configuration.md) for additional options.
+See [Fody usage](https://github.com/Fody/Home/blob/main/pages/usage.md) for general guidelines, and [Fody Configuration](https://github.com/Fody/Home/blob/main/pages/configuration.md) for additional options.
 
 ## Usage
 Call the extension method `Base<T>` to cast an object to one of its interfaces, and then call a method or a property.  
@@ -41,9 +41,9 @@ Just like:
 - `var value = this.Base<Interface>().Property`
 
 ## Examples
-- [An example project](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/src/InterfaceBaseInvoke.Example)
+- [An example project](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/main/src/InterfaceBaseInvoke.Example)
 
-- Unit tests can also serve as examples of API usage. See test cases for [valid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/test/InterfaceBaseInvoke.Tests.AssemblyToProcess) and [invalid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/master/test/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess).
+- Unit tests can also serve as examples of API usage. See test cases for [valid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/main/test/InterfaceBaseInvoke.Tests.AssemblyToProcess) and [invalid usage](https://github.com/huoshan12345/InterfaceBaseInvoke.Fody/tree/main/test/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess).
 
 - Basic example:
     ```

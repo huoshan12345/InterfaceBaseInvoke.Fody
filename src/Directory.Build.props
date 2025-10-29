@@ -14,7 +14,7 @@
     <PackageTags>IL;MSIL;Fody;ILWeaving;Cecil</PackageTags>
     <PackageProjectUrl>https://github.com/huoshan12345/InterfaceBaseInvoke.Fody</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIconUrl>https://raw.githubusercontent.com/huoshan12345/InterfaceBaseInvoke.Fody/master/icon.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/huoshan12345/InterfaceBaseInvoke.Fody/main/icon.png</PackageIconUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
