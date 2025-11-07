@@ -1,4 +1,4 @@
-﻿namespace InterfaceBaseInvoke.Fody;
+﻿namespace InterfaceBaseInvoke.Fody.Processing;
 
 public class ModuleWeaver : BaseModuleWeaver
 {
