@@ -1,4 +1,6 @@
-﻿namespace InterfaceBaseInvoke.Tests.Support;
+﻿using InterfaceBaseInvoke.Fody.Processing;
+
+namespace InterfaceBaseInvoke.Tests.Support;
 
 /// <summary>
 /// Used to collect all errors.
