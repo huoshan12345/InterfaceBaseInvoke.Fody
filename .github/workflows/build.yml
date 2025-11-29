@@ -66,10 +66,11 @@ jobs:
 
       - name: Create Tag
         if: github.ref == 'refs/heads/main'
-        uses: joutvhu/create-tag@v1
+        uses: huoshan12345/update-tag@v1
         with:
           tag_name: ${{ env.VERSION }}
           on_tag_exists: skip
+          update_if_exists: true
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
