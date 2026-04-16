@@ -5,8 +5,8 @@ on:
       - main
     paths:
       - .github/workflows/build.yml
-      - '*.sln'
-      - '*.slnx'
+      - "*.sln"
+      - "*.slnx"
       - build/pack.ps1
       - build/pkg.version
       - NuGet.Config
@@ -39,16 +39,16 @@ jobs:
             10.0.x
 
       - name: Test Debug x86
-        run: dotnet test ${{ env.TEST_PATH }} -c Debug -r x86
+        run: dotnet test ${{ env.TEST_PATH }} -c Debug -a x86
 
       - name: Test Debug x64
-        run: dotnet test ${{ env.TEST_PATH }} -c Debug -r x64
+        run: dotnet test ${{ env.TEST_PATH }} -c Debug -a x64
 
       - name: Test Release x86
-        run: dotnet test ${{ env.TEST_PATH }} -c Release -r x86
+        run: dotnet test ${{ env.TEST_PATH }} -c Release -a x86
 
       - name: Test Release x64
-        run: dotnet test ${{ env.TEST_PATH }} -c Release -r x64
+        run: dotnet test ${{ env.TEST_PATH }} -c Release -a x64
 
       - name: Test Report
         uses: dorny/test-reporter@main
