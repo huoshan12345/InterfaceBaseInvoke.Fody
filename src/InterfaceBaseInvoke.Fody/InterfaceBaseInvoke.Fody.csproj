@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!--This project must target netstandard2.0.-->
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,9 +7,7 @@
     <PackageId>$(MSBuildProjectName).Fody</PackageId>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="MoreFodyHelpers" Version="0.0.9" GeneratePathProperty="true" />
+    <PackageReference Include="MoreFodyHelpers" GeneratePathProperty="true" />
   </ItemGroup>
-
 </Project>

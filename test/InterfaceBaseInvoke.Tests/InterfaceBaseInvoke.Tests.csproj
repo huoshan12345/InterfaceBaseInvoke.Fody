@@ -1,16 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <DisableFody>true</DisableFody>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="All" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" />
     <ProjectReference Include="..\..\src\InterfaceBaseInvoke\InterfaceBaseInvoke.csproj" />
@@ -19,5 +17,4 @@
     <ProjectReference Include="..\InterfaceBaseInvoke.Tests.SourceGenerator\InterfaceBaseInvoke.Tests.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess\InterfaceBaseInvoke.Tests.StandardAssemblyToProcess.csproj" />
   </ItemGroup>
-
 </Project>
