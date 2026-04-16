@@ -22,6 +22,7 @@ env:
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
   SOLUTION: InterfaceBaseInvoke.slnx
   TEST_PATH: ./test/InterfaceBaseInvoke.Tests
+  IS_PUSH_DEFAULT: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 jobs:
   build:
@@ -38,17 +39,54 @@ jobs:
             9.0.x
             10.0.x
 
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION }} -v q
+
+      # linux runner doesn't support x86
+      - name: Test Debug
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug
+
+      - name: Test Release
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release
+
+      - name: Test Report
+        uses: dorny/test-reporter@main
+        if: (success() || failure())
+        with:
+          name: Test Report
+          path: TestResults/**/*.trx
+          reporter: dotnet-trx
+          list-suites: failed
+          list-tests: failed
+
+  build-win:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION }} -v q
+
       - name: Test Debug x86
-        run: dotnet test ${{ env.TEST_PATH }} -c Debug -a x86
+        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Debug -a x86
 
       - name: Test Debug x64
-        run: dotnet test ${{ env.TEST_PATH }} -c Debug -a x64
+        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Debug -a x64
 
       - name: Test Release x86
-        run: dotnet test ${{ env.TEST_PATH }} -c Release -a x86
+        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Release -a x86
 
       - name: Test Release x64
-        run: dotnet test ${{ env.TEST_PATH }} -c Release -a x64
+        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Release -a x64
 
       - name: Test Report
         uses: dorny/test-reporter@main
@@ -61,7 +99,7 @@ jobs:
           list-tests: failed
 
       - name: NuGet Publish
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: env.IS_PUSH_DEFAULT == 'true'
         shell: pwsh
         run: |
           ./build/pack.ps1
@@ -74,7 +112,7 @@ jobs:
           echo $ver
 
       - name: Create Tag
-        if: github.ref == 'refs/heads/main'
+        if: env.IS_PUSH_DEFAULT == 'true'
         uses: huoshan12345/update-tag@v1
         with:
           tag_name: ${{ env.VERSION }}
@@ -84,7 +122,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Create Release
-        if: github.ref == 'refs/heads/main'
+        if: env.IS_PUSH_DEFAULT == 'true'
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.VERSION }}
