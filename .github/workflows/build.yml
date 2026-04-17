@@ -91,7 +91,7 @@ jobs:
           list-tests: failed
 
   publish:
-    if: env.IS_PUSH_DEFAULT == 'true'
+    if: ${{ env.IS_PUSH_DEFAULT == 'true' }}
     runs-on: ubuntu-latest    
     needs: 
       - build
@@ -108,8 +108,7 @@ jobs:
             9.0.x
             10.0.x
 
-      - name: NuGet Publish
-        
+      - name: NuGet Publish        
         shell: pwsh
         run: |
           ./build/pack.ps1
