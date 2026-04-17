@@ -73,20 +73,18 @@ jobs:
             9.0.x
             10.0.x
 
-      - name: Restore
-        run: dotnet restore ${{ env.SOLUTION }} -v q
-
+      # we have x86 and x64 test projects, so we cannot use --no-restore here
       - name: Test Debug x86
-        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug -a x86
+        run: dotnet test ${{ env.SOLUTION }} -c Debug -a x86
 
       - name: Test Debug x64
-        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug -a x64
+        run: dotnet test ${{ env.SOLUTION }} -c Debug -a x64
 
       - name: Test Release x86
-        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release -a x86
+        run: dotnet test ${{ env.SOLUTION }} -c Release -a x86
 
       - name: Test Release x64
-        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release -a x64
+        run: dotnet test ${{ env.SOLUTION }} -c Release -a x64
 
       - name: Test Report
         uses: dorny/test-reporter@main
