@@ -62,7 +62,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup dotnet x64
+      # Check if required SDKs are installed, if not, install them.
+      # useful for win to save time, since installing SDKs on windows can be slow.
+      - name: Check installed SDKs
+        id: check_sdk
+        shell: pwsh
+        run: |
+          $sdks = dotnet --list-sdks
+          Write-Host $sdks
+
+          $needInstall = $false
+
+          if ($sdks -notmatch '^8\.0\.') { $needInstall = $true }
+          if ($sdks -notmatch '^9\.0\.') { $needInstall = $true }
+          if ($sdks -notmatch '^10\.0\.') { $needInstall = $true }
+
+          "need_install=$needInstall" >> $env:GITHUB_OUTPUT
+
+      - name: Setup dotnet
+        if: steps.check_sdk.outputs.need_install == 'True'
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
