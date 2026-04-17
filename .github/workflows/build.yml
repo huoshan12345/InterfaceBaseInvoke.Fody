@@ -21,7 +21,6 @@ env:
   VERSION: 0.0.1
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
   SOLUTION: InterfaceBaseInvoke.slnx
-  IS_PUSH_DEFAULT: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 jobs:
   build:
@@ -91,7 +90,7 @@ jobs:
           list-tests: failed
 
   publish:
-    if: ${{ env.IS_PUSH_DEFAULT == 'true' }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest    
     needs: 
       - build
