@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
 
 namespace InterfaceBaseInvoke.Tests.Support

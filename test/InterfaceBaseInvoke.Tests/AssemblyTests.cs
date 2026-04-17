@@ -1,7 +1,5 @@
-﻿using System.IO;
-using System.Reflection.Metadata;
+﻿using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-using InterfaceBaseInvoke.Fody.Processing;
 
 namespace InterfaceBaseInvoke.Tests
 {

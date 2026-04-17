@@ -24,10 +24,10 @@ public static class AssemblyToProcessFixture
 
         var testResult = weavingTask.ExecuteTestRun(
             assemblyPath,
-            ignoreCodes: new[]
-            {
+            ignoreCodes:
+            [
                 "0x801312da" // VLDTR_E_MR_VARARGCALLINGCONV
-            },
+            ],
             writeSymbols: true,
             beforeExecuteCallback: BeforeExecuteCallback,
             runPeVerify: false

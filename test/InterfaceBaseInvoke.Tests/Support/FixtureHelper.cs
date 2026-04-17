@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-#pragma warning disable 618
+﻿#pragma warning disable 618
 
 namespace InterfaceBaseInvoke.Tests.Support
 {

@@ -1,6 +1,4 @@
-﻿using System.IO;
-using InterfaceBaseInvoke.Fody.Processing;
-using MoreFodyHelpers.Processing;
+﻿using MoreFodyHelpers.Processing;
 
 namespace InterfaceBaseInvoke.Tests.Support;
 
