@@ -75,16 +75,16 @@ jobs:
 
       # we have x86 and x64 test projects, so we cannot use --no-restore here
       - name: Test Debug x86
-        run: dotnet test ${{ env.SOLUTION }} -c Debug -a x86
+        run: dotnet test ${{ env.SOLUTION }} -c Debug -r win-x86
 
       - name: Test Debug x64
-        run: dotnet test ${{ env.SOLUTION }} -c Debug -a x64
+        run: dotnet test ${{ env.SOLUTION }} -c Debug -r win-x64
 
       - name: Test Release x86
-        run: dotnet test ${{ env.SOLUTION }} -c Release -a x86
+        run: dotnet test ${{ env.SOLUTION }} -c Release -r win-x86
 
       - name: Test Release x64
-        run: dotnet test ${{ env.SOLUTION }} -c Release -a x64
+        run: dotnet test ${{ env.SOLUTION }} -c Release -r win-x64
 
       - name: Test Report
         uses: dorny/test-reporter@main
