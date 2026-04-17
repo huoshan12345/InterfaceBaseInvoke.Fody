@@ -65,13 +65,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup dotnet
+      - name: Setup dotnet x86
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
             9.0.x
             10.0.x
+          architecture: x86
+
+      - name: Setup dotnet x64
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+          architecture: x64
 
       # we have x86 and x64 test projects, so we cannot use --no-restore here
       - name: Test Debug x86
