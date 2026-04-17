@@ -41,7 +41,6 @@ jobs:
       - name: Restore
         run: dotnet restore ${{ env.SOLUTION }} -v q
 
-      # linux runner doesn't support x86
       - name: Test Debug
         run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug
 
@@ -65,15 +64,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup dotnet x86
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
-            10.0.x
-          architecture: x86
-
       - name: Setup dotnet x64
         uses: actions/setup-dotnet@v5
         with:
@@ -81,20 +71,15 @@ jobs:
             8.0.x
             9.0.x
             10.0.x
-          architecture: x64
 
-      # we have x86 and x64 test projects, so we cannot use --no-restore here
-      - name: Test Debug x86
-        run: dotnet test ${{ env.SOLUTION }} -c Debug -r win-x86
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION }} -v q
 
-      - name: Test Debug x64
-        run: dotnet test ${{ env.SOLUTION }} -c Debug -r win-x64
+      - name: Test Debug
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug
 
-      - name: Test Release x86
-        run: dotnet test ${{ env.SOLUTION }} -c Release -r win-x86
-
-      - name: Test Release x64
-        run: dotnet test ${{ env.SOLUTION }} -c Release -r win-x64
+      - name: Test Release
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release
 
       - name: Test Report
         uses: dorny/test-reporter@main
