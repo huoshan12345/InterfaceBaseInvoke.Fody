@@ -21,7 +21,6 @@ env:
   VERSION: 0.0.1
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
   SOLUTION: InterfaceBaseInvoke.slnx
-  TEST_PATH: ./test/InterfaceBaseInvoke.Tests
   IS_PUSH_DEFAULT: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 jobs:
@@ -78,16 +77,16 @@ jobs:
         run: dotnet restore ${{ env.SOLUTION }} -v q
 
       - name: Test Debug x86
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Debug -a x86
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug -a x86
 
       - name: Test Debug x64
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Debug -a x64
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Debug -a x64
 
       - name: Test Release x86
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Release -a x86
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release -a x86
 
       - name: Test Release x64
-        run: dotnet test ${{ env.TEST_PATH }} --no-restore -c Release -a x64
+        run: dotnet test ${{ env.SOLUTION }} --no-restore -c Release -a x64
 
       - name: Test Report
         uses: dorny/test-reporter@main
