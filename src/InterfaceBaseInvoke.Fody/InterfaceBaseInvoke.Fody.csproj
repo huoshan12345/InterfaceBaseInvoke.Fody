@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(MSBuildProjectName).Fody</PackageId>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MoreFodyHelpers" GeneratePathProperty="true" />
