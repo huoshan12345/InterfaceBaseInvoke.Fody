@@ -47,6 +47,7 @@ jobs:
               - .github/workflows/build.yml
               - build/pack.ps1
               - build/pkg.version
+              - global.json
               - NuGet.Config
               - src/**
               - test/**

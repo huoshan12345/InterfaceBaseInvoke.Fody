@@ -147,6 +147,7 @@ publish/
 
 # NuGet Packages
 *.nupkg
+*.snupkg
 # The packages folder can be ignored because of Package Restore
 **/packages/*
 # except build/, which is used as an MSBuild target.
@@ -248,4 +249,7 @@ BenchmarkDotNet.Artifacts/
 
 
 ~Generated/
+* - Backup.*.csproj
+*.decrypted.*
+appsettings.local.json
 !Directory.Build.rsp

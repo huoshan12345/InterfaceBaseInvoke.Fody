@@ -29,6 +29,7 @@
   </Folder>
   <Folder Name="/test/">
     <File Path="test/Directory.Build.props" />
+    <File Path="test/Directory.Build.targets" />
     <File Path="test/Directory.Packages.props" />
     <Project Path="test/InterfaceBaseInvoke.Tests.AssemblyToProcess/InterfaceBaseInvoke.Tests.AssemblyToProcess.csproj" />
     <Project Path="test/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess/InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess.csproj" />
