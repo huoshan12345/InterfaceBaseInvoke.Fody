@@ -14,8 +14,5 @@
     <PackageReference Include="Fody" PrivateAssets="none" />
     <PackageReference Include="FodyPackaging" PrivateAssets="All" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" PrivateAssets="All" />
-  </ItemGroup>
   <Import Project="..\MoreFodyHelpers.props" />
 </Project>
