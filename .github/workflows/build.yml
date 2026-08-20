@@ -17,6 +17,7 @@ permissions:
 env:
   SOLUTION: InterfaceBaseInvoke.Fody.slnx
   DOTNET_NOLOGO: 1
+  DOTNET_CLI_USE_MSBUILD_SERVER: false
   NUGET_SOURCE: https://api.nuget.org/v3/index.json
   MYGET_SOURCE: https://www.myget.org/F/huoshan12345/api/v2/package
   USE_NUGET: true
