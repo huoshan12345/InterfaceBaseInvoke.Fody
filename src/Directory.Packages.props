@@ -1,0 +1,10 @@
+﻿<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Fody" Version="6.9.3" />
+    <PackageVersion Include="FodyPackaging" Version="6.9.3" />
+    <PackageVersion Include="MoreFodyHelpers" Version="0.0.9" />
+  </ItemGroup>
+</Project>
