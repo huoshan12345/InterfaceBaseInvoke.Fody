@@ -1,11 +1,10 @@
-namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess
+namespace InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
+
+public abstract class InvalidAssemblyToProcessReference
 {
-    public abstract class InvalidAssemblyToProcessReference
-    {
 #if DEBUG
-        public static bool IsDebug { get; } = true;
+    public static bool IsDebug { get; } = true;
 #else
-        public static bool IsDebug { get; } = false;
+    public static bool IsDebug { get; } = false;
 #endif
-    }
 }

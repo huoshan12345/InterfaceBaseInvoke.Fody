@@ -1,8 +1,7 @@
-﻿namespace InterfaceBaseInvoke.Tests.SourceGenerator
+﻿namespace InterfaceBaseInvoke.Tests.SourceGenerator;
+
+public enum OutputType
 {
-    public enum OutputType
-    {
-        Context = 0,
-        File
-    }
+    Context = 0,
+    File
 }

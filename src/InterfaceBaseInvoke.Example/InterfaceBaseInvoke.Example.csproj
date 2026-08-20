@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net9.0;</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
     <PublishAot>true</PublishAot>
     <IsPackable>false</IsPackable>
-    <!--<DisableFody>true</DisableFody>-->
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Fody" PrivateAssets="all" />
@@ -23,8 +22,4 @@
     <Message Importance="High" Text="WeaverFiles: @(WeaverFiles)" />
     <Error Text="No weaver found at @(WeaverFiles)." Condition="!Exists(@(WeaverFiles))" />
   </Target>
-  <!--<Target Name="CheckExecutedWeavers" AfterTargets="AfterCompile" Condition="!Exists(@(FodyExecutedWeavers))">
-    <Delete Files="@(IntermediateAssembly)" /> force to rebuild this project next time when it is not weaved.
-    <Error Text="No executed weaver found." />
-  </Target>-->
 </Project>

@@ -1,30 +1,29 @@
 ﻿using InterfaceBaseInvoke.Tests.InvalidAssemblyToProcess;
 
-namespace InterfaceBaseInvoke.Tests.Weaving
+namespace InterfaceBaseInvoke.Tests.Weaving;
+
+public class AnchorMethodTests : ClassTestsBase
 {
-    public class AnchorMethodTests : ClassTestsBase
+    protected override string ClassName => nameof(AnchorMethodTestCases);
+
+    [Fact]
+    public void Base_WithSelf()
     {
-        protected override string ClassName => nameof(AnchorMethodTestCases);
+        var error = ShouldHaveError(nameof(AnchorMethodTestCases.Base_WithSelf));
+        error.ShouldContain("The method Base<T> requires that T is an interface type");
+    }
 
-        [Fact]
-        public void Base_WithSelf()
-        {
-            var error = ShouldHaveError(nameof(AnchorMethodTestCases.Base_WithSelf));
-            error.ShouldContain("The method Base<T> requires that T is an interface type");
-        }
+    [Fact]
+    public void Base_WithParent()
+    {
+        var error = ShouldHaveError(nameof(AnchorMethodTestCases.Base_WithParent));
+        error.ShouldContain("The method Base<T> requires that T is an interface type");
+    }
 
-        [Fact]
-        public void Base_WithParent()
-        {
-            var error = ShouldHaveError(nameof(AnchorMethodTestCases.Base_WithParent));
-            error.ShouldContain("The method Base<T> requires that T is an interface type");
-        }
-
-        [Fact]
-        public void Base_MoreThanOnce()
-        {
-            var error = ShouldHaveError(nameof(AnchorMethodTestCases.Base_MoreThanOnce));
-            error.ShouldContain("The method Base<T> cannot be invoked followed by another Base<T>");
-        }
+    [Fact]
+    public void Base_MoreThanOnce()
+    {
+        var error = ShouldHaveError(nameof(AnchorMethodTestCases.Base_MoreThanOnce));
+        error.ShouldContain("The method Base<T> cannot be invoked followed by another Base<T>");
     }
 }

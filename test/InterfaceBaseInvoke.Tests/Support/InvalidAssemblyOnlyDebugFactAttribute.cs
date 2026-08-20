@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace InterfaceBaseInvoke.Tests.Support;
 
+[AttributeUsage(AttributeTargets.Method)]
 public class InvalidAssemblyOnlyDebugFactAttribute : FactAttribute
 {
     public InvalidAssemblyOnlyDebugFactAttribute(
@@ -9,6 +10,6 @@ public class InvalidAssemblyOnlyDebugFactAttribute : FactAttribute
         [CallerLineNumber] int sourceLineNumber = -1)
         : base(sourceFilePath, sourceLineNumber)
     {
-        Skip = InvalidAssemblyToProcessFixture.IsDebug ? null : "Inconclusive in release builds";
+        Skip = (InvalidAssemblyToProcessFixture.IsDebug ? null : "Inconclusive in release builds");
     }
 }

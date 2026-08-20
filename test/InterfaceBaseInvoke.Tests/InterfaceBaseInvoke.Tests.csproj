@@ -7,7 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
-    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="All" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\InterfaceBaseInvoke.Fody\InterfaceBaseInvoke.Fody.csproj" />
