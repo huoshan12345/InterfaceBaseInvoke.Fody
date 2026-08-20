@@ -9,6 +9,6 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MoreFodyHelpers" Version="0.0.8" GeneratePathProperty="true" />
+    <PackageReference Include="MoreFodyHelpers" GeneratePathProperty="true" />
   </ItemGroup>
 </Project>

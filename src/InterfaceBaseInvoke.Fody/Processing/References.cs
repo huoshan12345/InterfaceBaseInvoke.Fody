@@ -20,5 +20,6 @@ public sealed class TypeReferences(ModuleWeavingContext context)
 
 public sealed class MethodReferences(ModuleWeavingContext context, TypeReferences types)
 {
-    public MethodReference FunctionPointer { get; } = MethodRefBuilder.MethodByNameAndSignature(context, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr.ToTypeRefBuilder(context), []).Build();
+    public MethodReference FunctionPointer { get; } = MethodRefBuilder.MethodByNameAndSignature(
+        context, types.RuntimeMethodHandle, nameof(RuntimeMethodHandle.GetFunctionPointer), 0, types.IntPtr.ToTypeRefBuilder(context), []).Build();
 }

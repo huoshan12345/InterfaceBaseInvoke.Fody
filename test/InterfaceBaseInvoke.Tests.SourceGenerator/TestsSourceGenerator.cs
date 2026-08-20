@@ -8,45 +8,44 @@ using System.Runtime.CompilerServices;
 using InterfaceBaseInvoke.Tests.SourceGenerator.Sources;
 using Microsoft.CodeAnalysis;
 
-namespace InterfaceBaseInvoke.Tests.SourceGenerator
+namespace InterfaceBaseInvoke.Tests.SourceGenerator;
+
+[Generator]
+public class TestsSourceGenerator : IIncrementalGenerator
 {
-    [Generator]
-    public class TestsSourceGenerator : IIncrementalGenerator
+    public static readonly string[] Namespaces =
+    [
+        "InterfaceBaseInvoke",
+        "Tests",
+        "AssemblyToProcess",
+    ];
+
+    public static readonly string AssemblyName = string.Join(".", Namespaces);
+
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        public static readonly string[] Namespaces =
-        [
-            "InterfaceBaseInvoke",
-            "Tests",
-            "AssemblyToProcess",
-        ];
+        //if (Debugger.IsAttached == false)
+        //    Debugger.Launch();
 
-        public static readonly string AssemblyName = string.Join(".", Namespaces);
-
-        public void Initialize(IncrementalGeneratorInitializationContext context)
+        context.RegisterImplementationSourceOutput(context.CompilationProvider, (ctx, provider) =>
         {
-            //if (Debugger.IsAttached == false)
-            //    Debugger.Launch();
+            var assemblySymbol = provider.SourceModule.ReferencedAssemblySymbols.FirstOrDefault(q => q.Name == AssemblyName);
+            if (assemblySymbol == null)
+                throw new InvalidOperationException("Cannot find assembly symbol: " + AssemblyName);
 
-            context.RegisterImplementationSourceOutput(context.CompilationProvider, (ctx, provider) =>
+            var cur = Namespaces.Aggregate(assemblySymbol.GlobalNamespace, (current, ns) => current.GetNamespaceMembers().First(m => m.Name == ns));
+            var types = cur.GetTypeMembers();
+
+            foreach (var type in types)
             {
-                var assemblySymbol = provider.SourceModule.ReferencedAssemblySymbols.FirstOrDefault(q => q.Name == AssemblyName);
-                if (assemblySymbol == null)
-                    throw new InvalidOperationException("Cannot find assembly symbol: " + AssemblyName);
+                var idx = type.Name.IndexOf("TestCases", StringComparison.Ordinal);
+                if (idx < 0)
+                    continue;
 
-                var cur = Namespaces.Aggregate(assemblySymbol.GlobalNamespace, (current, ns) => current.GetNamespaceMembers().First(m => m.Name == ns));
-                var types = cur.GetTypeMembers();
-
-                foreach (var type in types)
-                {
-                    var idx = type.Name.IndexOf("TestCases", StringComparison.Ordinal);
-                    if (idx < 0)
-                        continue;
-
-                    var className = type.Name.Substring(0, idx) + "Tests";
-                    var (name, code) = TestsSource.Generate(type, className);
-                    ctx.AddSource(name, code);
-                }
-            });
-        }
+                var className = type.Name.Substring(0, idx) + "Tests";
+                var (name, code) = TestsSource.Generate(type, className);
+                ctx.AddSource(name, code);
+            }
+        });
     }
 }

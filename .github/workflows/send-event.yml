@@ -1,7 +1,8 @@
-name: send-event
+name: Send Event
 on:
   push:
     branches:
+      - main
       - master
   pull_request_target:
     types:
@@ -32,6 +33,24 @@ on:
       - created
       - edited
       - deleted
+  issues:
+    types:
+      - opened
+      - edited
+      - deleted
+      - transferred
+      - pinned
+      - unpinned
+      - closed
+      - reopened
+      - assigned
+      - unassigned
+      - labeled
+      - unlabeled
+      - locked
+      - unlocked
+      - milestoned
+      - demilestoned
   issue_comment:
     # NOTE: it includes pull request comment events.
     # Note: This event will only trigger a workflow run if the workflow file is on the default branch.
@@ -42,17 +61,23 @@ on:
   release:
     types:
       - published
+  workflow_run:
+    workflows:
+      - Build
+    types:
+      - completed
 
 jobs:
   send_event:
     runs-on: ubuntu-latest
     steps:
       - name: Send Event
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
-          escapeData: true
+          escapeData: false
           retry: 3
           url: https://github.huoshan.qzz.io/api/github/event
           method: POST
           customHeaders: '{ "token": "${{ secrets.GITHUB_TOKEN }}", "repository": "${{ github.repository }}" }'
           data: '{ "github": ${{ toJSON(github) }} }'
+          timeout: 30000

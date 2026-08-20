@@ -1,14 +1,15 @@
-using System.Diagnostics;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace InterfaceBaseInvoke.Tests.Support
+namespace InterfaceBaseInvoke.Tests.Support;
+
+[AttributeUsage(AttributeTargets.Method)]
+public class InvalidAssemblyOnlyDebugFactAttribute : FactAttribute
 {
-    public class InvalidAssemblyOnlyDebugFactAttribute : FactAttribute
+    public InvalidAssemblyOnlyDebugFactAttribute(
+        [CallerFilePath] string? sourceFilePath = null,
+        [CallerLineNumber] int sourceLineNumber = -1)
+        : base(sourceFilePath, sourceLineNumber)
     {
-        public override string? Skip
-        {
-            get => base.Skip ?? (InvalidAssemblyToProcessFixture.IsDebug ? null : "Inconclusive in release builds");
-            set => base.Skip = value;
-        }
+        Skip = (InvalidAssemblyToProcessFixture.IsDebug ? null : "Inconclusive in release builds");
     }
 }
