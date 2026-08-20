@@ -248,3 +248,4 @@ BenchmarkDotNet.Artifacts/
 
 
 ~Generated/
+!Directory.Build.rsp
